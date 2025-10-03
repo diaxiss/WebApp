@@ -54,7 +54,8 @@ class SearchRequest(BaseModel):
     rarity: str = None
     card_set: str = None
     card_id: str = None
-    release_date: tuple = None
+    release_date_from: str = None
+    release_date_to: str = None
     limit: int = 10
     offset: int = 0
 
@@ -62,18 +63,20 @@ class SearchRequest(BaseModel):
 @app.post('/search')
 async def search(request: SearchRequest):
 
-    result = query_card(
+    print(request)
+    result, numOfCards = query_card(
         name = request.name,
         illustrator = request.illustrator,
         rarity = request.rarity,
         card_set = request.card_set,
         card_id = request.card_id,
-        release_date = request.release_date,
+        release_date_from = request.release_date_from,
+        release_date_to = request.release_date_to,
         limit = request.limit,
         offset = request.offset
         )
 
-    return {"message": "Success!", "data": result} 
+    return {"data": result,  'numOfCards': numOfCards} 
 
 class CardsRequest(BaseModel):
     limit: int

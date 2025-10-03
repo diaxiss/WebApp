@@ -3,17 +3,20 @@ from tcgdexsdk.enums import Extension, Quality
 import sqlite3
 import requests
 import asyncio
+from tcgdexsdk.models.Card import Card
+from tcgdexsdk.models.Set import Set
+from tcgdexsdk.models.SetResume import SetResume
 
 
 tcgdex = TCGdex()
 
-def format_card(card, card_set):
+def format_card(card: dict, card_set: Set) -> dict:
 
     card['set_id'] = card_set.id
     return card
 
 
-def existsInDb(item):
+def setExistsInDb(item: SetResume):
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
     name = str(item.name)
@@ -30,7 +33,7 @@ def existsInDb(item):
     return True
 
 
-def addCardsToDb(cards: list):
+def addCardsToDb(cards: list) -> None:
 
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
@@ -50,7 +53,7 @@ def addCardsToDb(cards: list):
     con.close()
 
 
-def addSetToDb(card_set):
+def addSetToDb(card_set: Set) -> None:
 
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
@@ -89,7 +92,7 @@ async def fetch_sets():
 
     for item in sets:
 
-        if existsInDb(item):
+        if setExistsInDb(item):
             continue
 
         card_set = await get_set(item.id)

@@ -83,11 +83,14 @@ def parseConditions(params) -> tuple[list, list]:
                 conditions.append(f"LOWER(card_sets.name) LIKE LOWER(?)")
                 values.append(f'{value}%')
 
-            case 'release_date':
+            case 'release_date_from': 
                 conditions.append(f"card_sets.release_date >= ?")
-                values.append(value[0])
+                values.append(f'{value}')
+
+            case 'release_date_to':
+                
                 conditions.append(f"card_sets.release_date <= ?")
-                values.append(value[1])
+                values.append(f'{value}')
 
             case 'limit'| 'offset':
                 pass
@@ -103,8 +106,9 @@ def query_card(
     rarity: str = None,
     card_set: str = None,
     card_id: str = None,
-    release_date: tuple = None
-    ) -> list:
+    release_date_from: str = None,
+    release_date_to: str = None
+    ) -> tuple[list, int]:
 
     params = {k: v for k, v in locals().items() if v is not None}
 
@@ -112,7 +116,7 @@ def query_card(
     cur = con.cursor()
 
     query = '''
-    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.release_date, card.image
+    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.release_date, card.image, COUNT(*) OVER() as num_of_pages
     FROM card
     LEFT JOIN card_sets
     ON card.set_id = card_sets.id
@@ -120,13 +124,19 @@ def query_card(
     '''
 
     conditions, values = parseConditions(params)
+
     query += ' AND '.join(conditions)
+    query += ' ORDER BY card_sets.release_date DESC' 
     query += ' LIMIT ? OFFSET ?'
+
     values.extend([limit, offset])
 
     result = cur.execute(query, values).fetchall()
+    numOfPages = result[0][-1]
+    for item in result:
+        item = item[:-1]
     con.close()
-    return formatQueryResult(result)
+    return formatQueryResult(result), numOfPages
 
 
 def get_all_cards(limit: int, offset: int) -> tuple:

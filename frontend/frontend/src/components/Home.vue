@@ -2,14 +2,14 @@
 <script setup lang='ts'>
 
 import api from '../api';
-import placeholder_image from '../assets/placeholder.png'
 import SearchForm from './SearchForm.vue'
 import PageHeader from './PageHeader.vue';
+import QueryResults from './QueryResults.vue';
 
 import type { Card } from './Interfaces.vue';
 
 import { ref, type Ref} from 'vue'
-import { payload } from '../utilities/usePagination';
+import { payload, numOfPages, numOfCards, currentPage } from '../utilities/usePagination';
 
 
 //---------------------
@@ -21,11 +21,8 @@ let allSets: Ref<String[]> = ref<String[]>([])
 let allRarities: Ref<String[]> = ref<String[]>([])
 let allIllustrators: Ref<String[]> = ref<String[]>([])
 
-let queryResult: Ref<Card[]> = ref<Card[]>([])
+let queriedCards: Ref<Card[]> = ref<Card[]>([])
 let loadedCards: Ref<Card[]> = ref<Card[]>([])
-
-const numOfCards: Ref<number> = ref<number>(0)
-const numOfPages: Ref<number> = ref<number>(-1)
 
 //-------------------------
 // API functions on mount
@@ -88,64 +85,68 @@ const fetchAllSets = async() => {
 const fetchAllIllustrators = async() => {
 
     try{
-        api
-            .get('/illustrators')
-            .then((res) => res.data)
-            .then((data) => {
-                allIllustrators = data.illustrators
-            })
+        const res = await api.get('/illustrators')
+        allIllustrators = res.data.illustrators
     }
     catch(err){
         console.error(err)
     }
 }
+
+
+//----------------------------------
+// Run necessary API functions
+//----------------------------------
+
+fetchAllSets()
+fetchAllRarities()
+fetchAllIllustrators()
+fetchAllCards()
 
 
 //------------------
 // Query functions
 //------------------
 
-// Function to fetch images for cards
-function fetchImage(image: string | null){
-
-    if (image === null){
-        return placeholder_image
-    }
-    return `http://localhost:8000/images/${image}`
-}
-
 // API call to handle form submit
-const handleSearch = async() =>{
 
-
-    console.log(`Limit: ${payload.limit}, Offset: ${payload.offset}`)
-    console.log(payload)
+const queryCards = async() =>{
     try{
         const res = await api.post('/search', payload)
-        queryResult.value = [...queryResult.value, ...res.data.data as Card[]]
-        console.log(queryResult)
+        //queriedCards.value = [...queriedCards.value, ...res.data.data as Card[]]
+        queriedCards.value = res.data.data as Card[]
+        numOfCards.value = res.data.numOfCards
+        numOfPages.value = Math.ceil(numOfCards.value / payload.limit)
+
     }
     catch(err){
         console.error(err)
     }
 }
 
+
+//----------------------------
+// Event handler functions
+//----------------------------
+
+// Function to handle SearchForm form submit
 const handleSeachSubmit = () => {
-    queryResult.value = []
-    handleSearch()
+    queriedCards.value = []
+    currentPage.value = 1
+    queryCards()
 }
 
-// API call for items after item per page change
+// Function to handle SearchForm limit change
 const handlePageChange = () =>{
 
-    //Reset all values
+    // Reset all values
     loadedCards.value = []
 
     payload.offset = 0
 
     // Fetch either all cards, or repeat payload request
-    if (queryResult.value.length > 0){
-        queryResult.value = []
+    if (queriedCards.value.length > 0){
+        queriedCards.value = []
         handleSeachSubmit()
     }
     else {
@@ -153,15 +154,25 @@ const handlePageChange = () =>{
     }
 }
 
+// Function to handle Load More for queried cards 
+const handleLoadMoreQueryCards = () => {
+    
+    if (currentPage.value >= numOfPages.value) return
 
-//----------------------------------
-// Run necessary fetch functions
-//----------------------------------
+    payload.offset = payload.limit*currentPage.value;
 
-fetchAllSets()
-fetchAllRarities()
-fetchAllIllustrators()
-fetchAllCards()
+    queryCards();
+
+    currentPage.value++;
+    
+}
+
+// Function to handle Load More for all cards
+const handleLoadMoreAllCards = () => {
+    payload.offset += payload.limit
+    fetchAllCards()
+}
+
 </script>
 
 
@@ -177,51 +188,20 @@ fetchAllCards()
         :allSets = "allSets"
         :allRarities = "allRarities"
         :allIllustrators = "allIllustrators"
-        :offset = "payload.offset"
-        :limit = "payload.limit"
         @submit="handleSeachSubmit"
         @change="handlePageChange"
     />
 
     <!-- Loaded Cards -->
-    <div v-if=" queryResult.length == 0">    
+    <QueryResults
+        v-if=" queriedCards.length == 0" 
+        :cards="loadedCards" 
+        @load="handleLoadMoreAllCards"/>
 
-        <div class="query-container">
-
-            <div class="query-item-container" v-for="result in loadedCards" :key="result.card_id">
-
-                <img class='card-image' :src="fetchImage(result.image)">
-                <p>{{result.name}}</p>
-                <p>{{ result.card_set }}</p>
-
-            </div>
-
-        </div>
-
-        <button type="button" @click="{payload.offset += payload.limit; fetchAllCards()}">Load more</button>
-
-    </div>
-
-    <!-- Queried cards -->
-    <div v-else-if="queryResult.length > 0">
-        
-
-        <div  class="query-container">
-
-            <div class="query-item-container" v-for="result in queryResult" :key="result.card_id">
-
-                <img class='card-image' :src="fetchImage(result.image)">
-                <p>{{ result.card_set }}</p>
-                <p>{{ result.release_date }}</p>
-                <p>{{ result.rarity }}</p>
-
-            </div>
-
-        </div>
-
-        <button type="button" @click="{payload.offset += payload.limit; handleSearch()}">Load more</button>
-    
-    </div>
+    <QueryResults 
+        v-else-if="queriedCards.length > 0"
+        :cards="queriedCards"
+        @load="handleLoadMoreQueryCards"/>
 
 
 </template>

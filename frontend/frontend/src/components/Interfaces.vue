@@ -6,7 +6,8 @@ export interface SearchPayload{
     rarity?: string | null
     card_set?: string | null
     card_id?: string | null
-    release_date?: string | null
+    release_date_from?: string | null
+    release_date_to?: string | null
     limit: number,
     offset: number
 }

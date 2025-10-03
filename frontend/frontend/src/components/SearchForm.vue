@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import type { SearchPayload } from './Interfaces.vue';
 import { payload } from '../utilities/usePagination.ts';
+import { watch } from 'vue';
 
 
 //-----------------------
@@ -35,16 +36,32 @@ const emits = defineEmits<{
 
 // Handles form submit
 const handleSubmit = async() => {
-
+    console.log(payload as SearchPayload);
     (Object.keys(payload) as Array<keyof SearchPayload>).forEach(key => {
-        if (payload[key] == null || payload[key] == "") delete payload[key];
+        if (payload[key] === undefined || payload[key] === "") delete payload[key];
     });
-
+    if (Object.keys(payload).length <= 2){
+        console.log(payload as SearchPayload)
+        console.log("Not enought form data")
+        return
+    }
     payload.offset = 0
     emits('submit')
 }
 
 // Handles items per page change
+watch(() => payload.release_date_from, (newValue) => {
+    if (payload.release_date_to && newValue as string > payload.release_date_to){
+        payload.release_date_from = payload.release_date_to
+    }
+})
+
+
+watch(() => payload.release_date_to, (newValue) => {
+    if (payload.release_date_from && newValue as string > payload.release_date_from){
+        payload.release_date_to = payload.release_date_from
+    }
+})
 
 </script>
 
@@ -80,8 +97,15 @@ const handleSubmit = async() => {
         <label for="card_id">Card id: </label>
         <input placeholder = "Card id..." name="card_id" type="text" v-model="payload.card_id">
 
+
         <label for="release_date">Release date: </label>
-        <input placeholder = "Release date..." name="release_date" type="text" v-model="payload.release_date">
+
+        <div>
+            <input placeholder = "Release date..." name="release_date_from" type="date" v-model="payload.release_date_from" :max="(payload.release_date_to as string)">
+            <span> - </span>
+            <input placeholder = "Release date..." name="release_date_to" type="date" v-model="payload.release_date_to" :min="(payload.release_date_from as string)">
+        </div>
+
 
         <div>
             <label>Limit per page:</label>
