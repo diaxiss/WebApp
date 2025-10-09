@@ -1,6 +1,6 @@
 <script setup lang='ts'>
-import type { SearchPayload } from './Interfaces.vue';
-import { payload } from '../utilities/usePagination.ts';
+import type { SearchPayload } from '../utilities/interfaces.ts';
+import { payload } from '../utilities/constants.ts';
 
 
 //-----------------------
@@ -23,12 +23,6 @@ const emits = defineEmits<{
     (f: 'change'): void
 }>()
 
-
-//--------------------
-// Search variables
-//--------------------
-
-
 //------------------------------
 // Functions to handle submits
 //------------------------------
@@ -37,7 +31,7 @@ const emits = defineEmits<{
 const handleSubmit = async() => {
     console.log(payload as SearchPayload);
     (Object.keys(payload) as Array<keyof SearchPayload>).forEach(key => {
-        if (payload[key] === undefined || payload[key] === "") delete payload[key];
+        if (payload[key] === "" || payload[key] === null) delete payload[key];
     });
     if (Object.keys(payload).length <= 2){
         console.log(payload as SearchPayload)

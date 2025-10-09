@@ -1,5 +1,21 @@
 import { createApp } from 'vue'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import './style.css'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+import Home from './pages/Home.vue'
+import Sets from './pages/Sets.vue' 
+import SetDetails from './pages/SetDetails.vue'
+
+const routes: RouteRecordRaw[] = [
+  { path: '/', component: Home },
+  { path: '/sets', component: Sets },
+  { path: '/sets/:id', component: SetDetails, props: true}
+]
+
+export const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+createApp(App).use(router).mount('#app')

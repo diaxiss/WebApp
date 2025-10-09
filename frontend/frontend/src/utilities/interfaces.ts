@@ -1,5 +1,3 @@
-<script lang="ts">
-
 export interface SearchPayload{
     name?: string | null
     illustrator?: string | null
@@ -17,9 +15,16 @@ export interface Card{
     illustrator: string,
     rarity: string,
     card_set: string,
+    card_set_id: string,
     card_id: string, 
     release_date:string
     image: string | null
 }
 
-</script>
+export interface SetCard{
+    id: string,
+    name: string,
+    release_date: string,
+    card_count_official: string,
+    card_count_total: string
+}

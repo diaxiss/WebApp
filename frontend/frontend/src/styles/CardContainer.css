@@ -1,0 +1,52 @@
+.query-container{
+    display:grid;
+    grid-template-columns: repeat(10, 1fr);
+    justify-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 10px;
+}
+.card-image{
+    aspect-ratio: 0.7159;
+    width: 100%;
+    cursor: zoom-in;
+}
+
+.query-item-container{
+    margin: 0px;
+    padding: 0px;
+}
+
+.query-item-container > p{
+    margin: 0;
+    padding: 0;
+}
+
+.image-overlay{
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: #000000AA;
+    height: 100%;
+    width: 100%;
+}
+
+.image-wrapper{
+    cursor:grab;
+    height: 80%;
+}
+
+.image-wrapper > img{
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: contain;
+}
+
+.query-item-container > div > p{
+    cursor:pointer;
+}
