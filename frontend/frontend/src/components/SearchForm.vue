@@ -1,7 +1,6 @@
 <script setup lang='ts'>
 import type { SearchPayload } from './Interfaces.vue';
 import { payload } from '../utilities/usePagination.ts';
-import { watch } from 'vue';
 
 
 //-----------------------
@@ -48,20 +47,6 @@ const handleSubmit = async() => {
     payload.offset = 0
     emits('submit')
 }
-
-// Handles items per page change
-watch(() => payload.release_date_from, (newValue) => {
-    if (payload.release_date_to && newValue as string > payload.release_date_to){
-        payload.release_date_from = payload.release_date_to
-    }
-})
-
-
-watch(() => payload.release_date_to, (newValue) => {
-    if (payload.release_date_from && newValue as string > payload.release_date_from){
-        payload.release_date_to = payload.release_date_from
-    }
-})
 
 </script>
 
