@@ -87,7 +87,6 @@ async def get_set(set_id: str):
 @app.post('/search')
 async def search(request: SearchRequest):
 
-    print(request)
     result, numOfCards = query_card(
         name = request.name,
         illustrator = request.illustrator,
