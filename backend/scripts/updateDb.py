@@ -17,7 +17,7 @@ def format_card(card: dict, card_set: Set) -> dict:
 
 
 def setExistsInDb(item: SetResume):
-    con = sqlite3.connect('./data/cards.db')
+    con = sqlite3.connect('../data/cards.db')
     cur = con.cursor()
     name = str(item.name)
     name = f'{name}%'
@@ -35,7 +35,7 @@ def setExistsInDb(item: SetResume):
 
 def addCardsToDb(cards: list) -> None:
 
-    con = sqlite3.connect('./data/cards.db')
+    con = sqlite3.connect('../data/cards.db')
     cur = con.cursor()
 
     for card in cards:
@@ -55,7 +55,7 @@ def addCardsToDb(cards: list) -> None:
 
 def addSetToDb(card_set: Set) -> None:
 
-    con = sqlite3.connect('./data/cards.db')
+    con = sqlite3.connect('../data/cards.db')
     cur = con.cursor()
 
     params = [card_set.id, card_set.name, card_set.releaseDate, card_set.cardCount.total, card_set.cardCount.official] 
@@ -81,7 +81,7 @@ async def downloadImages(cards: list):
         #print(image)
         response = requests.get(image)
         print(card)
-        with open(f'./data/images/{card['id']}.png', 'wb') as out:
+        with open(f'../data/images/{card['id']}.png', 'wb') as out:
             out.write(response.content)
 
 async def fetch_sets():

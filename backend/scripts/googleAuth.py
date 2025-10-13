@@ -1,0 +1,66 @@
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import jwt
+import datetime
+from userDbQueries import check_user_in_db
+
+
+SECRET_KEY = 'random_string_to_protect_pokemon_data'
+ALGORITHM = "HS256"
+
+
+def create_access_token(user: dict, expires_minutes: int = 15) -> str:
+    to_encode = user.copy()
+    now = datetime.datetime.now(datetime.UTC)
+    expire = now + datetime.timedelta(minutes=expires_minutes)
+    to_encode.update({'exp': expire, 'iat': now})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str):
+    return jwt.decode(token, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def create_refresh_token(user: dict, expires_delta: int = 60*60*24*7):
+    to_encode = {'sub': user['sub']}
+    now = datetime.datetime.now(datetime.UTC)
+    expire = now + datetime.timedelta(minutes=expires_delta)
+    to_encode.update({'exp': expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_google_token(credential):
+    try:
+        
+        idInfo = id_token.verify_oauth2_token(
+            credential,
+            requests.Request(),
+            "528593109002-ppqscik1gb7adakc7nji10nlqj3d08k8.apps.googleusercontent.com"
+        )
+        return idInfo
+
+    except ValueError:
+        return None
+
+
+def handle_google_authentification(credential):
+    
+    idInfo = verify_google_token(credential)
+
+    if not idInfo:
+        raise HTTPException(status_code=400, detail="Invalid Google token")
+
+    user = {
+        'sub': idInfo['sub'],
+        'email': idInfo['email'], 
+        'name': idInfo['name'],
+        'picture': idInfo['picture']
+    }
+
+    check_user_in_db(user)
+
+    access_token = create_access_token(user)
+    refresh_token = create_refresh_token(user)
+
+    return [user['name'], user['email'], user['picture'], access_token, refresh_token]
+    

@@ -81,10 +81,18 @@ export const queryCards = async() => {
 }
 
 // Function to fetch local images for cards
-export function fetchImage(image: string | null){
+export async function fetchImage(image: string | null){
 
     if (image === null){
         return placeholder_image
     }
-    return `http://localhost:8000/images/${image}`
+    // return `http://localhost:8000/images/${image}`
+    try{
+        await api.get(`/images/${image}`)
+        return `http://localhost:8000/images/${image}`
+    }
+    catch(err){
+        return placeholder_image
+    }
 }
+

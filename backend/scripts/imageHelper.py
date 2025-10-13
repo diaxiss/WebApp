@@ -4,10 +4,10 @@ import os
 
 def main():
 
-    conn = sqlite3.connect('./data/cards.db')
+    conn = sqlite3.connect('../data/cards.db')
     cur = conn.cursor()    
 
-    for file in os.listdir('./data/images'):
+    for file in os.listdir('../data/images'):
         if not file.endswith('.png'):
             continue
         card_id = os.path.splitext(file)[0]

@@ -1,7 +1,11 @@
-from fastapi import FastAPI
+import sys
+sys.path.insert(1, './scripts')
+
+from fastapi import FastAPI, Response
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
+from scripts.googleAuth import handle_google_authentification
 from fastapi.staticfiles import StaticFiles
 
 
@@ -39,6 +43,9 @@ class SearchRequest(BaseModel):
 class CardsRequest(BaseModel):
     limit: int
     offset: int
+
+class AuthRequest(BaseModel):
+    credential: str
 
 
 #----------------------------------
@@ -108,3 +115,20 @@ async def search(request: SearchRequest):
 async def get_all_items(request: CardsRequest):
     result, numOfCards = get_all_cards(request.limit, request.offset)
     return {"cards": result, 'numOfCards': numOfCards}
+
+#-----------------------------------
+# Google authentification
+#-----------------------------------
+@app.post('/auth-google')
+async def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
+    print(request)
+    user, email, picture, access_token, refresh_token = handle_google_authentification(request.credential)
+    
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,           # must be True in production (HTTPS)
+        samesite="none"        # allow cross-site requests
+    )
+    return {'user': {'name': user, 'picture': picture, 'email': email}, 'access_token': access_token}

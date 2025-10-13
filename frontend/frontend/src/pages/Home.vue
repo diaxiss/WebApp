@@ -9,7 +9,7 @@ import CardContainer from '../components/CardContainer.vue';
 import type { Card } from '../utilities/interfaces';
 
 import { onMounted, ref, type Ref} from 'vue'
-import { payload, numOfPages, numOfCards, currentPage } from '../utilities/constants';
+import { payload, numOfPages, numOfCards, currentPage, accessToken } from '../utilities/constants';
 import { fetchAllCards, fetchAllIllustrators, fetchAllRarities, fetchAllSetsInfo, queryCards } from '../utilities/aplFetch';
 
 
@@ -82,7 +82,7 @@ const handleSeachSubmit = () => {
 const handlePageChange = () =>{
 
     payload.offset = 0
-
+    console.log(accessToken.value)
     // Fetch either all cards, or repeat payload request
     if (_queried) handleSeachSubmit();
     else handleFetchAllCards();

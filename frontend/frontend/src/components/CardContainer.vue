@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import type { Card } from '../utilities/interfaces';
 import { fetchImage } from '../utilities/aplFetch';
 import '../styles/CardContainer.css'
+import placeholder_image from '../assets/placeholder.png'
 
-defineProps<{
+const props = defineProps<{
   cards: Card[]
   displayInfo: boolean
 }>()
 
+const images = ref<Record<string, string>>({})
 const fullscreenImage = ref<string | null>(null);
 const imageWrapper = ref<HTMLElement | null>(null)
 
-function openImage(image: string){
-    fullscreenImage.value = image
+
+async function openImage(image: string | null){
+    const result_image = await fetchImage(image)
+    console.log(result_image)
+    fullscreenImage.value = result_image
 }
 
 function closeImage(){
@@ -76,6 +81,22 @@ onUnmounted(() => {
     if (e.key === 'Escape') closeImage()
   })
 })
+
+watch(
+  () => props.cards,
+  async (newCards) => {
+    for (const card of newCards){
+      try{
+        images.value[card.card_id] = await fetchImage(card.image)
+      }
+      catch(err){
+        console.error(err)
+      }
+    }
+  }
+)
+
+
 </script>
 
 <template>
@@ -86,14 +107,14 @@ onUnmounted(() => {
                 <img 
                     class='card-image'
                     loading="lazy"
-                    :src="fetchImage(result.image)"
-                    @click="openImage(fetchImage(result.image))">
+                    :src="images[result.card_id] || placeholder_image"
+                    :alt="`${result.name} - ${result.card_id}`"
+                    @click="openImage(result.image)">
                 <div v-if="displayInfo">
                     <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
                     <p>{{ result.release_date }}</p>
                 </div>
             </div>
-
         </div>
 
         <!-- Fullscreen overlay -->
@@ -107,6 +128,7 @@ onUnmounted(() => {
                 @mouseleave="resetTransform"
                 class="image-wrapper">
                 <img 
+                    :alt="fullscreenImage"
                     :src="fullscreenImage"
                     ref="imageWrapper"
 />
