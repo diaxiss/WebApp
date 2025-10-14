@@ -4,6 +4,7 @@ import jwt
 import datetime
 from userDbQueries import check_user_in_db
 from fastapi import HTTPException, status
+from env import GOOGLE_CLIENT_ID
 
 
 SECRET_KEY = 'random_string_to_protect_pokemon_data'
@@ -46,11 +47,13 @@ def verify_google_token(credential):
         idInfo = id_token.verify_oauth2_token(
             credential,
             requests.Request(),
-            "528593109002-ppqscik1gb7adakc7nji10nlqj3d08k8.apps.googleusercontent.com"
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=5
         )
         return idInfo
 
-    except ValueError:
+    except ValueError as e:
+        print(e)
         return None
 
 

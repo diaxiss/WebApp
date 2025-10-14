@@ -131,7 +131,8 @@ const handleLoad = (page: number) => {
         @load="handleLoad"/> -->
     <CardContainer
         :cards="loadedCards"
-        :display-info="true"/>        
+        :display-info="true"
+        :extra-options="true"/>        
 
     <PageIndicator
         @load="handleLoad"/>

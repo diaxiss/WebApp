@@ -1,3 +1,7 @@
 __pycache__
 .*
+env.py
 node_modules
+backend/data/images/*
+backend/data/user_images/*
+user_images/*

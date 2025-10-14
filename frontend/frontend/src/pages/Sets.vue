@@ -19,7 +19,7 @@ function redirectToSetInfo(id: string){
 
 <template>
     <PageHeader />
-    <h1>SETOVI</h1>
+    <h1>Sets</h1>
     <div class="set-holder">
         <div v-for="card_set in sets" :key="card_set.id" class="set-item" @click="redirectToSetInfo(card_set.id)">
             <p>{{card_set.name}}</p>

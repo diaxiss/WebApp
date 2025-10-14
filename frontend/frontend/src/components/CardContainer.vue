@@ -4,10 +4,13 @@ import type { Card } from '../utilities/interfaces';
 import { fetchImage } from '../utilities/aplFetch';
 import '../styles/CardContainer.css'
 import placeholder_image from '../assets/placeholder.png'
+import { handleAddToWishlist } from '../utilities/aplFetch';
+import { handleAddToCollection } from '../utilities/aplFetch';
 
 const props = defineProps<{
   cards: Card[]
   displayInfo: boolean
+  extraOptions: boolean
 }>()
 
 const images = ref<Record<string, string>>({})
@@ -16,7 +19,7 @@ const imageWrapper = ref<HTMLElement | null>(null)
 
 
 async function openImage(image: string | null){
-    const result_image = await fetchImage(image)
+    const result_image = await fetchImage(image, 'images')
     console.log(result_image)
     fullscreenImage.value = result_image
 }
@@ -87,7 +90,7 @@ watch(
   async (newCards) => {
     for (const card of newCards){
       try{
-        images.value[card.card_id] = await fetchImage(card.image)
+        images.value[card.card_id] = await fetchImage(card.image, 'images')
       }
       catch(err){
         console.error(err)
@@ -96,42 +99,33 @@ watch(
   }
 )
 
-
 </script>
 
 <template>
-    <div class="query-container">
+  <div class="query-container">
 
-            <div class="query-item-container" v-for="result in cards" :key="result.card_id">
-                
-                <img 
-                    class='card-image'
-                    loading="lazy"
-                    :src="images[result.card_id] || placeholder_image"
-                    :alt="`${result.name} - ${result.card_id}`"
-                    @click="openImage(result.image)">
-                <div v-if="displayInfo">
-                    <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
-                    <p>{{ result.release_date }}</p>
-                </div>
-            </div>
-        </div>
+    <div class="query-item-container" v-for="result in cards" :key="result.card_id">
 
-        <!-- Fullscreen overlay -->
-        <div
-            v-if="fullscreenImage"
-            class="image-overlay"
-            @click.self="closeImage">
-            <div
-                @mouseenter="handleMouseEnter"
-                @mousemove="handleMouseMove"
-                @mouseleave="resetTransform"
-                class="image-wrapper">
-                <img 
-                    :alt="fullscreenImage"
-                    :src="fullscreenImage"
-                    ref="imageWrapper"
-/>
-            </div>
-        </div>
+      <img class='card-image' loading="lazy" :src="images[result.card_id] || placeholder_image"
+        :alt="`${result.name} - ${result.card_id}`" @click="openImage(result.image)">
+      <div v-if="displayInfo">
+        <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
+        <p>{{ result.release_date }}</p>
+      </div>
+
+      <!-- Extra options for wishlist/collections -->
+      <div v-if="extraOptions">
+        <span @click="handleAddToWishlist(result.card_id)">Wishlist</span>
+        <span @click="handleAddToCollection(result.card_id, 1)">Add</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fullscreen overlay -->
+  <div v-if="fullscreenImage" class="image-overlay" @click.self="closeImage">
+    <div @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="resetTransform" class="image-wrapper">
+      <img :alt="fullscreenImage" :src="fullscreenImage" ref="imageWrapper" />
+    </div>
+  </div>
 </template>

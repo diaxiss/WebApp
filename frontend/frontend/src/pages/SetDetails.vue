@@ -31,5 +31,6 @@ onMounted(() => {
     <CardContainer
         :cards="cards"
         :display-info="false"
+        :extra-options="true"
     />
 </template>

@@ -1,6 +1,40 @@
 import sqlite3
 
 
+def add_card_to_wishlist(card_id: str, sub: str) -> list:
+
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    query = '''
+    INSERT INTO wishlist(google_id, card_id)
+    VALUES(?, ?)
+    ON CONFLICT (google_id, card_id) DO NOTHING
+    '''
+    
+    cur.execute(query, [sub, card_id])
+
+    con.commit()
+
+def add_cards_to_collection(card_id: str, count: int, sub: str) -> list:
+
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    query = '''
+    INSERT INTO collection(google_id, card_id, count)
+    VALUES(?, ?, ?)
+    ON CONFLICT(google_id, card_id) DO
+    UPDATE SET
+    count = count + excluded.count
+    '''
+    
+    cur.execute(query, [sub, card_id, count])
+
+    con.commit()
+
+
+
 def get_all_sets_info() -> list:
 
     con = sqlite3.connect('./data/cards.db')

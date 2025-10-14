@@ -30,3 +30,4 @@ export const currentPage = ref<number>(1)
 
 
 export const userName = ref<string | null>(localStorage.getItem('user'))
+export const userPicture = ref<string | null>(localStorage.getItem('image'))

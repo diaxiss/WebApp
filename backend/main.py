@@ -4,11 +4,13 @@ sys.path.insert(1, './scripts')
 from fastapi import FastAPI, Response, Depends
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
-from scripts.googleAuth import handle_google_authentification, decode_access_token
-from userDbQueries import get_user_info, get_user_collection
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
+
+from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
+from dbQueries import add_card_to_wishlist, add_cards_to_collection
+from scripts.googleAuth import handle_google_authentification, decode_access_token
+from userDbQueries import get_user_info, get_user_collection_or_wishlist
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
 
@@ -17,6 +19,7 @@ app = FastAPI()
 
 #serve images
 app.mount('/images', StaticFiles(directory='./data/images'), name = 'images')
+app.mount('/user_images', StaticFiles(directory='./data/user_images'), name = 'user_images')
 
 # Allow requests from frontend
 origins = [
@@ -50,6 +53,13 @@ class CardsRequest(BaseModel):
 
 class AuthRequest(BaseModel):
     credential: str
+
+class WishlistRequest(BaseModel):
+    card_id: str
+
+class CollectionRequest(BaseModel):
+    card_id: str
+    count: int
 
 
 #----------------------------------
@@ -145,11 +155,43 @@ async def fetch_user_info(token: str = Depends(oauth2_scheme)):
         return result
     return HTTPException
 
+@app.get('/wishlist')
+async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_access_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        result = get_user_collection_or_wishlist(sub, 'wishlist')
+        cards = result['cards']
+        numOfCards = result['numOfCards']
+        return {'cards': cards, 'numOfCards': numOfCards}
+    return HTTPException
+
+@app.post('/wishlist/add')
+async def add_to_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_access_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        add_card_to_wishlist(request.card_id, sub)
+        return
+    return HTTPException
+
+
 @app.get('/collection')
 async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_access_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
-        result = get_user_collection(sub)
-        return result
+        result = get_user_collection_or_wishlist(sub, 'collection')
+        cards = result['cards']
+        numOfCards = result['numOfCards']
+        return {'cards': cards, 'numOfCards': numOfCards}
+    return HTTPException
+
+@app.post('/collection/add')
+async def add_to_wishlist(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_access_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        add_cards_to_collection(request.card_id, request.count, sub)
+        return
     return HTTPException

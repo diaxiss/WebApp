@@ -1,6 +1,7 @@
 import api from "../api"
 import placeholder_image from '../assets/placeholder.png'
 import { payload } from "./constants"
+import { accessToken } from "./userAuthentification"
 
 // Function to fetch all rarities
 export const fetchAllSetsInfo = async() => {
@@ -81,18 +82,89 @@ export const queryCards = async() => {
 }
 
 // Function to fetch local images for cards
-export async function fetchImage(image: string | null){
+export async function fetchImage(image: string | null, folder: string){
 
     if (image === null){
         return placeholder_image
     }
-    // return `http://localhost:8000/images/${image}`
     try{
-        await api.get(`/images/${image}`)
-        return `http://localhost:8000/images/${image}`
+        await api.head(`/${folder}/${image}`)
+        return `http://localhost:8000/${folder}/${image}`
     }
     catch(err){
         return placeholder_image
     }
 }
+
+
+export const fetchCollection = async() => {
+
+    try{
+        const res = await api.get('/collection', {
+            headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
+        const collection = res.data.cards
+        const numOfCollection = res.data.numOfCards
+        
+        return {collection: collection, numOfCollection: numOfCollection}
+    }
+    catch(err){
+        console.error(err)
+        return {collection: [], numOfCollection: 0}
+    }
+}
+
+export const fetchWishlist = async() => {
+
+    try{
+        const res = await api.get('/wishlist', {
+            headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
+        const wishlist = res.data.cards
+        const numOfWishlist = res.data.numOfCards
+        console.log(res.data)
+        return {wishlist: wishlist, numOfWishlist: numOfWishlist}
+    }
+    catch(err){
+        console.error(err)
+        return {wishlist: [], numOfWishlist: 0}
+    }
+}
+
+export const handleAddToWishlist = async(card_id: string) => {
+    console.log(card_id)
+    try{
+        const res = await api.post('/wishlist/add',{
+            card_id: card_id
+        }, {headers: {
+            Authorization: `Bearer ${accessToken.value}`
+        }
+        })
+    }
+    catch(err){
+        console.error(err)
+    }
+}
+
+
+export const handleAddToCollection = async(card_id: string, count: number) => {
+    try{
+        console.log(card_id, count)
+        const res = await api.post('/collection/add',{
+            card_id: card_id,
+            count: count
+        }, {headers: {
+            Authorization: `Bearer ${accessToken.value}`
+        }
+        })
+    }
+    catch(err){
+        console.error(err)
+    }
+}
+
 

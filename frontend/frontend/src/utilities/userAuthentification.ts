@@ -1,7 +1,7 @@
 import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
 import { ref } from "vue"
-import { userName } from "./constants"
+import { userPicture, userName } from "./constants"
 import { router } from "../main"
 
 export const accessToken = ref(localStorage.getItem('accessToken'))
@@ -27,7 +27,9 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
                                     {credential: response.credential},
                                     {withCredentials: true})
         userName.value = res.data.user.name
+        userPicture.value = res.data.user.picture
         localStorage.setItem('user', userName.value || 'what')
+        localStorage.setItem('image', userPicture.value || 'huh')
         setToken(res.data.access_token)
         return 'Success'
     }

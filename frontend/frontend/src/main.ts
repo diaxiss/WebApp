@@ -8,11 +8,15 @@ import Home from './pages/Home.vue'
 import Sets from './pages/Sets.vue' 
 import SetDetails from './pages/SetDetails.vue'
 import Profile from './pages/Profile.vue'
+import Collection from './pages/Collection.vue'
+import Wishlist from './pages/Wishlist.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/profile', component: Profile},
   { path: '/sets', component: Sets },
+  { path: '/collection', component: Collection },
+  { path: '/wishlist', component: Wishlist },
   { path: '/sets/:id', component: SetDetails, props: true}
 ]
 
@@ -25,7 +29,7 @@ const app = createApp(App)
 app.use(router)
 
 app.use(GoogleSignInPlugin, {
-  clientId: "528593109002-ppqscik1gb7adakc7nji10nlqj3d08k8.apps.googleusercontent.com",
+  clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 });
 
 app.mount('#app')
