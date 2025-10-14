@@ -1,13 +1,16 @@
 import sys
 sys.path.insert(1, './scripts')
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Depends
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
-from scripts.googleAuth import handle_google_authentification
-from userDbQueries import get_user_info
+from scripts.googleAuth import handle_google_authentification, decode_access_token
+from userDbQueries import get_user_info, get_user_collection
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
 
 
 app = FastAPI()
@@ -122,7 +125,6 @@ async def get_all_items(request: CardsRequest):
 #----------------------------------------
 @app.post('/auth-google')
 async def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
-    print(request)
     user, email, picture, access_token, refresh_token = handle_google_authentification(request.credential)
     
     response.set_cookie(
@@ -135,6 +137,19 @@ async def handle_authentification_request(request: AuthRequest, response: Respon
     return {'user': {'name': user, 'picture': picture, 'email': email}, 'access_token': access_token}
 
 @app.get('/user')
-async def fetch_user_info():
-    result = get_user_info(id = 1)
-    return result
+async def fetch_user_info(token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_access_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        result = get_user_info(sub)
+        return result
+    return HTTPException
+
+@app.get('/collection')
+async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_access_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        result = get_user_collection(sub)
+        return result
+    return HTTPException

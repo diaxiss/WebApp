@@ -3,6 +3,7 @@ from google.auth.transport import requests
 import jwt
 import datetime
 from userDbQueries import check_user_in_db
+from fastapi import HTTPException, status
 
 
 SECRET_KEY = 'random_string_to_protect_pokemon_data'
@@ -19,10 +20,11 @@ def create_access_token(user: dict, expires_minutes: int = 15) -> str:
 
 def decode_access_token(token: str):
     try:
-        decoded = jwt.decode(token, SECRET_KEY, algorithm=ALGORITHM)
-        print(decoded)
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return decoded
 
-    except JWTError:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
