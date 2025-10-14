@@ -7,9 +7,11 @@ import GoogleSignInPlugin  from 'vue3-google-signin'
 import Home from './pages/Home.vue'
 import Sets from './pages/Sets.vue' 
 import SetDetails from './pages/SetDetails.vue'
+import Profile from './pages/Profile.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
+  { path: '/profile', component: Profile},
   { path: '/sets', component: Sets },
   { path: '/sets/:id', component: SetDetails, props: true}
 ]

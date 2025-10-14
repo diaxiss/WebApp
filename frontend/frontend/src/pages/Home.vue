@@ -9,8 +9,9 @@ import CardContainer from '../components/CardContainer.vue';
 import type { Card } from '../utilities/interfaces';
 
 import { onMounted, ref, type Ref} from 'vue'
-import { payload, numOfPages, numOfCards, currentPage, accessToken } from '../utilities/constants';
+import { payload, numOfPages, numOfCards, currentPage } from '../utilities/constants';
 import { fetchAllCards, fetchAllIllustrators, fetchAllRarities, fetchAllSetsInfo, queryCards } from '../utilities/aplFetch';
+import { accessToken } from '../utilities/userAuthentification';
 
 
 

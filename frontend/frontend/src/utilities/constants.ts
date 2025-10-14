@@ -29,5 +29,4 @@ export const numOfPages = ref<number>(-1)
 export const currentPage = ref<number>(1)
 
 
-export const user = ref<{name: string; picture: string, email: string} | null>(null)
-export const accessToken = ref<string | null>(null)
+export const userName = ref<string | null>(localStorage.getItem('user'))

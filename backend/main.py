@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
 from scripts.googleAuth import handle_google_authentification
+from userDbQueries import get_user_info
 from fastapi.staticfiles import StaticFiles
 
 
@@ -116,9 +117,9 @@ async def get_all_items(request: CardsRequest):
     result, numOfCards = get_all_cards(request.limit, request.offset)
     return {"cards": result, 'numOfCards': numOfCards}
 
-#-----------------------------------
-# Google authentification
-#-----------------------------------
+#----------------------------------------
+# Google authentification and user info
+#----------------------------------------
 @app.post('/auth-google')
 async def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
     print(request)
@@ -132,3 +133,8 @@ async def handle_authentification_request(request: AuthRequest, response: Respon
         samesite="none"        # allow cross-site requests
     )
     return {'user': {'name': user, 'picture': picture, 'email': email}, 'access_token': access_token}
+
+@app.get('/user')
+async def fetch_user_info():
+    result = get_user_info(id = 1)
+    return result

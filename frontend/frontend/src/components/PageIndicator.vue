@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import '../styles/PageIndicator.css'
 import { currentPage, numOfPages } from '../utilities/constants';
+
+const emits = defineEmits<{
+    (e: 'load', value: number): void
+}>()
+
+const jumpPage = ref<number>(1)
 
 const pagesToShow = computed(() => {
 
@@ -28,9 +34,11 @@ const pagesToShow = computed(() => {
     return pages
 })
 
-const emits = defineEmits<{
-    (e: 'load', value: number): void
-}>()
+const handlePageJump = () => {
+    if (jumpPage.value > numOfPages.value || jumpPage.value < 1) return
+    console.log(jumpPage.value)
+    emits('load', jumpPage.value)
+}
 
 </script>
 
@@ -65,9 +73,11 @@ const emits = defineEmits<{
             <button :disabled="currentPage === numOfPages" @click="$emit('load', numOfPages)">&gt;&gt;</button>
             
         </div>
-
-        <label for="page-select">Jump to: </label>
-        <input id="page-select"></input>
+        <form @submit.prevent="handlePageJump">
+            <label for="page-select">Jump to: </label>
+            <input id="page-select" type="number" v-model.number="jumpPage"></input>
+            <button type="submit">Apply</button>
+        </form>
     </div>
 
 </template>

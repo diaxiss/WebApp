@@ -18,7 +18,16 @@ def create_access_token(user: dict, expires_minutes: int = 15) -> str:
 
 
 def decode_access_token(token: str):
-    return jwt.decode(token, SECRET_KEY, algorithm=ALGORITHM)
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithm=ALGORITHM)
+        print(decoded)
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
+
 
 
 def create_refresh_token(user: dict, expires_delta: int = 60*60*24*7):
@@ -58,7 +67,6 @@ def handle_google_authentification(credential):
     }
 
     check_user_in_db(user)
-
     access_token = create_access_token(user)
     refresh_token = create_refresh_token(user)
 

@@ -1,6 +1,19 @@
 import sqlite3
 
 
+def get_user_info(id):
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    query = '''
+    SELECT name, email, picture
+    FROM user
+    WHERE id = ?
+    '''
+
+    result = cur.execute(query, [id]).fetchall()[0]
+    return {'name': result[0], 'email': result[1], 'picture': result[2]}
+
 def add_user_to_db(user: dict, con, cur):
     
     query = '''
@@ -13,11 +26,11 @@ def add_user_to_db(user: dict, con, cur):
 
 
 def check_user_in_db(user: dict) -> None:
-    con = sqlite3.connect('./data/userDb.db')
+    con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
     query = '''
-    SELECT google_id
+    SELECT id
     FROM user
     WHERE google_id = ?
     '''
@@ -26,11 +39,12 @@ def check_user_in_db(user: dict) -> None:
     if len(result) == 0:
         add_user_to_db(user, con, cur)
         con.commit()
+    return result[0][0]
 
 
 def main():
 
-    con = sqlite3.connect('../data/userDb.db')
+    con = sqlite3.connect('../data/cards.db')
     cur = con.cursor()
 
     query = '''
@@ -46,8 +60,13 @@ def main():
     '''
     cur.execute(query)
 
+    query = '''
+    CREATE TABLE wishlist(
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        card_id TEXT NOT NULL,
+        FOREIGN KEY (card_id) REFERENCES cards(id)
+    )
+    '''
+    cur.execute(query)
+
     con.commit()
-
-
-if __name__ == '__main__':
-    main()

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { GoogleSignInButton, type CredentialResponse } from 'vue3-google-signin';
-import { googleAuthentificationSuccess } from '../utilities/userAuthentification';
-import { accessToken } from '../utilities/constants';
+import { accessToken, googleAuthentificationSuccess, handleLogout } from '../utilities/userAuthentification';
+import { userName } from '../utilities/constants';
 
 const onLoginError = async (response: CredentialResponse) => {
     console.log('Error: ', response)
@@ -14,18 +14,25 @@ const onLoginError = async (response: CredentialResponse) => {
     <div class="header">
         <p>Header</p>
         <GoogleSignInButton
-            v-show="accessToken == null"
+            v-if="!accessToken"
             type="standard"
-            theme="filled_blue"
+            theme="filled_black"
             size="large"
             text="signin_with"
-            shape="rectangular"
+            shape="pill"
             logo_alignment="left"
             @success="googleAuthentificationSuccess" 
             @error="onLoginError"/>
+        <button 
+            v-else
+            @click="handleLogout"
+            >
+            Log Out
+        </button>
         <nav class="nav-bar">
             <router-link to="/">Home</router-link>
             <router-link to="/sets">Sets</router-link>
+            <router-link to="/profile" v-if="userName">Profile</router-link>
         </nav>
     </div>
 
@@ -41,7 +48,10 @@ const onLoginError = async (response: CredentialResponse) => {
     align-items: center; 
 }
 .nav-bar{
+    display: flex;
     margin-left: auto;
+    margin-right: 10px;
+    gap: 10px;
 }
 
 </style>
