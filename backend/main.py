@@ -1,19 +1,37 @@
+#------------------
+# STDLIB libraries
+#------------------
 import sys
+import requests
 sys.path.insert(1, './scripts')
 
-from fastapi import FastAPI, Response, Depends
+#-----------------------
+# Third party libraries
+#-----------------------
+from typing import Annotated
+from fastapi import FastAPI, Response, Depends, Cookie
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 
-from dbQueries import query_card, get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
-from dbQueries import add_card_to_wishlist, add_cards_to_collection
-from scripts.googleAuth import handle_google_authentification, decode_access_token
+#-----------------
+# Local packages
+#-----------------
+from scripts.googleAuth import handle_google_authentification, decode_token, create_access_token
+
+from dbQueries import get_all_rarities, get_all_cards, get_all_sets, get_all_sets_info, get_all_illustrators
+from dbQueries import query_card
+
+from wishlistCollectionDb import add_card_to_wishlist, add_card_to_collection
+from wishlistCollectionDb import remove_card_from_collection, remove_card_from_wishlist
+
 from userDbQueries import get_user_info, get_user_collection_or_wishlist
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
 
+#-----------
+# App setup
+#-----------
 
 app = FastAPI()
 
@@ -27,6 +45,7 @@ origins = [
     "http://127.0.0.1:5173",
 ]
 
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -34,6 +53,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# authentification scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
+
+
+
+#-------------
+# Models
+#-------------
 
 class SearchRequest(BaseModel):
     name: str = None
@@ -61,6 +89,9 @@ class CollectionRequest(BaseModel):
     card_id: str
     count: int
 
+class Cookies(BaseModel):
+    refresh_token: str
+
 
 #----------------------------------
 # GET all routes
@@ -86,6 +117,8 @@ async def get_illustrators():
     result = get_all_illustrators()
     return {'illustrators': result}
 
+
+
 #----------------------------------------
 # GET with parameters
 #----------------------------------------
@@ -100,6 +133,8 @@ async def get_item(card_id: str):
 async def get_set(set_id: str):
     result, _ = query_card(card_set_id = set_id, limit = 500, offset = 0)
     return {"cards": result}
+
+
 
 #----------------
 # POST queries
@@ -130,9 +165,12 @@ async def get_all_items(request: CardsRequest):
     result, numOfCards = get_all_cards(request.limit, request.offset)
     return {"cards": result, 'numOfCards': numOfCards}
 
+
+
 #----------------------------------------
 # Google authentification and user info
 #----------------------------------------
+
 @app.post('/auth-google')
 async def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
     user, email, picture, access_token, refresh_token = handle_google_authentification(request.credential)
@@ -148,16 +186,41 @@ async def handle_authentification_request(request: AuthRequest, response: Respon
 
 @app.get('/user')
 async def fetch_user_info(token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_access_token(token)
+    jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
         result = get_user_info(sub)
         return result
     return HTTPException
 
+@app.post('/logout')
+async def handle_logout(response: Response):
+    response.delete_cookie(
+        key='refresh_token',
+        path='/',
+        httponly=True,
+        secure=True,
+        samesite='none'
+    )
+    return {'msg': 'Logged out'}
+
+@app.post('/refresh-token')
+async def refresh_access_token(cookies: Annotated[Cookies, Cookie()]):
+
+    refresh_token=cookies.refresh_token
+    decoded_refresh_token = decode_token(refresh_token)
+
+    if decoded_refresh_token:
+        del decoded_refresh_token['exp']
+        newAccessToken = create_access_token(decoded_refresh_token)
+        return {'access_token': newAccessToken}
+
+#--------------------------------
+# Wishlist and Collection routes
+#--------------------------------
 @app.get('/wishlist')
 async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_access_token(token)
+    jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
         result = get_user_collection_or_wishlist(sub, 'wishlist')
@@ -166,19 +229,28 @@ async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
         return {'cards': cards, 'numOfCards': numOfCards}
     return HTTPException
 
-@app.post('/wishlist/add')
+@app.post('/wishlist')
 async def add_to_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_access_token(token)
+    jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
         add_card_to_wishlist(request.card_id, sub)
         return
     return HTTPException
 
+@app.delete('/wishlist')
+async def remove_from_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        remove_card_from_wishlist(request.card_id, sub)
+        return
+    return HTTPException
+
 
 @app.get('/collection')
 async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_access_token(token)
+    jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
         result = get_user_collection_or_wishlist(sub, 'collection')
@@ -187,11 +259,20 @@ async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
         return {'cards': cards, 'numOfCards': numOfCards}
     return HTTPException
 
-@app.post('/collection/add')
-async def add_to_wishlist(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_access_token(token)
+@app.post('/collection')
+async def add_to_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
-        add_cards_to_collection(request.card_id, request.count, sub)
+        add_card_to_collection(request.card_id, request.count, sub)
+        return
+    return HTTPException
+
+@app.delete('/collection')
+async def remove_from_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        remove_card_from_collection(request.card_id, request.count, sub)
         return
     return HTTPException

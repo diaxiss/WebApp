@@ -2,7 +2,6 @@ import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
 import { ref } from "vue"
 import { userPicture, userName } from "./constants"
-import { router } from "../main"
 
 export const accessToken = ref(localStorage.getItem('accessToken'))
 
@@ -16,13 +15,13 @@ export const handleLogout = async() => {
     accessToken.value = null
     localStorage.removeItem('user')
     userName.value = null
-    router.push('/')
-
+    localStorage.removeItem('image')
+    userPicture.value = null
+    await api.post('/logout')
 }
 
 export const googleAuthentificationSuccess = async(response: CredentialResponse) => {
     try{
-        console.log('Google respone: ', response)
         const res = await api.post('/auth-google',
                                     {credential: response.credential},
                                     {withCredentials: true})
@@ -36,4 +35,13 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
     catch (err){
         console.error(err)
     }
+}
+
+export const refreshToken = async() => {
+    const response = await api.post('/refresh-token',
+        {},
+        {withCredentials: true}
+    )
+    accessToken.value = response.data.access_token
+    localStorage.setItem('accessToken', response.data.access_token)
 }

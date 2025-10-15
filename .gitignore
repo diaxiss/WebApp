@@ -1,7 +1,8 @@
 __pycache__
 .*
+!.gitignore
 env.py
-node_modules
+node_modules/
 backend/data/images/*
 backend/data/user_images/*
 user_images/*

@@ -1,5 +1,6 @@
 import { reactive, ref, type Reactive } from "vue"
 import type { SearchPayload } from './interfaces'
+import { fetchImage } from "./aplFetch"
 
 const limit = ref<number>(10)
 const offset = ref<number>(0)
@@ -30,4 +31,6 @@ export const currentPage = ref<number>(1)
 
 
 export const userName = ref<string | null>(localStorage.getItem('user'))
-export const userPicture = ref<string | null>(localStorage.getItem('image'))
+export const userPicture = ref<string | null>(
+    await fetchImage(`${localStorage.getItem('image')}.png`, 'user_images')
+)

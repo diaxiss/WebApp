@@ -14,6 +14,7 @@ onMounted(async() => {
     const response = await fetchCollection()
     collection.value = response.collection
     numOfCollection.value = response.numOfCollection
+    console.log(collection.value)
 })
 
 </script>

@@ -52,3 +52,17 @@
 .query-item-container > div > p{
     cursor:pointer;
 }
+
+.extra-options{
+    display: flex;
+}
+
+.extra-options > button {
+    height: 30px;
+    width: 30px;
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

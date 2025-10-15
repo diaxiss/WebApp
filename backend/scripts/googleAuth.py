@@ -19,7 +19,7 @@ def create_access_token(user: dict, expires_minutes: int = 15) -> str:
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_access_token(token: str):
+def decode_token(token: str):
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return decoded
@@ -34,7 +34,7 @@ def decode_access_token(token: str):
 
 
 def create_refresh_token(user: dict, expires_delta: int = 60*60*24*7):
-    to_encode = {'sub': user['sub']}
+    to_encode = user.copy()
     now = datetime.datetime.now(datetime.UTC)
     expire = now + datetime.timedelta(minutes=expires_delta)
     to_encode.update({'exp': expire})
@@ -75,5 +75,5 @@ def handle_google_authentification(credential):
     access_token = create_access_token(user)
     refresh_token = create_refresh_token(user)
 
-    return [user['name'], user['email'], user['picture'], access_token, refresh_token]
+    return [user['name'], user['email'], user['sub'], access_token, refresh_token]
     

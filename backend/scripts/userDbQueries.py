@@ -18,15 +18,15 @@ def get_user_collection_or_wishlist(sub: str, col_or_wish = 'collection'):
     WHERE google_id = ?
     ORDER BY card_sets.release_date
     '''
-    cardQuery = f"SELECT card_id{', count' if col_or_wish == 'collection' else ' '} " + baseQuery + ' LIMIT 10' 
+    cardQuery = f"SELECT card_id{', count' if col_or_wish == 'collection' else ' '}, card.name, card.image " + baseQuery + ' LIMIT 10' 
     cards = cur.execute(cardQuery, [sub]).fetchall()
 
     if col_or_wish == 'collection':
         for i, item in enumerate(cards):
-            cards[i] = {'card_id': item[0], 'count': item[1]}
+            cards[i] = {'card_id': item[0], 'count': item[1], 'name': item[2], 'image': item[3]}
     else:
         for i, item in enumerate(cards):
-            cards[i] = {'card_id': item[0]}
+            cards[i] = {'card_id': item[0], 'name': item[1], 'image': item[2]}
     
     totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
     total_cards = cur.execute(totalCardQuery, [sub]).fetchall()[0]

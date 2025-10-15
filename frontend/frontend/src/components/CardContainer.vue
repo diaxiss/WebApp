@@ -6,6 +6,8 @@ import '../styles/CardContainer.css'
 import placeholder_image from '../assets/placeholder.png'
 import { handleAddToWishlist } from '../utilities/aplFetch';
 import { handleAddToCollection } from '../utilities/aplFetch';
+import { handleRemoveFromCollection } from '../utilities/aplFetch';
+import { handleRemoveFromWishlist } from '../utilities/aplFetch';
 
 const props = defineProps<{
   cards: Card[]
@@ -77,7 +79,7 @@ function resetTransform(){
 onMounted(() => {
   window.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeImage()
-  })
+  })  
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', e => {
@@ -88,15 +90,19 @@ onUnmounted(() => {
 watch(
   () => props.cards,
   async (newCards) => {
+    const newImages: Record<string, string> = {}
     for (const card of newCards){
       try{
-        images.value[card.card_id] = await fetchImage(card.image, 'images')
+        newImages[card.card_id] = await fetchImage(card.image, 'images')
       }
       catch(err){
         console.error(err)
+        newImages[card.card_id] = placeholder_image
       }
     }
-  }
+    images.value = newImages
+  },
+  {immediate:true, deep: true}
 )
 
 </script>
@@ -108,15 +114,30 @@ watch(
 
       <img class='card-image' loading="lazy" :src="images[result.card_id] || placeholder_image"
         :alt="`${result.name} - ${result.card_id}`" @click="openImage(result.image)">
+
       <div v-if="displayInfo">
         <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
         <p>{{ result.release_date }}</p>
       </div>
 
       <!-- Extra options for wishlist/collections -->
-      <div v-if="extraOptions">
-        <span @click="handleAddToWishlist(result.card_id)">Wishlist</span>
-        <span @click="handleAddToCollection(result.card_id, 1)">Add</span>
+      <div v-if="extraOptions" class="extra-options">
+
+        <button @click="handleAddToWishlist(result.card_id)">
+          <span >❤️</span>
+        </button>
+
+        <button @click="handleRemoveFromWishlist(result.card_id)">
+          <span>💔</span>
+        </button>
+
+        <button @click="handleAddToCollection(result.card_id, 1)">
+          <span>+</span>
+        </button>
+
+        <button @click="handleRemoveFromCollection(result.card_id, 1)">
+          <span>-</span>
+        </button>
       </div>
 
     </div>

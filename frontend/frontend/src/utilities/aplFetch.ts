@@ -1,22 +1,10 @@
 import api from "../api"
 import placeholder_image from '../assets/placeholder.png'
 import { payload } from "./constants"
-import { accessToken } from "./userAuthentification"
+import { accessToken, refreshToken } from "./userAuthentification"
+
 
 // Function to fetch all rarities
-export const fetchAllSetsInfo = async() => {
-
-    try{
-        const res = await api.get('/sets/info')
-        return res.data.sets
-    }
-    catch(err){
-        console.error(err)
-        return null
-    }
-}
-
-// Function to fetch all sets
 export const fetchAllRarities = async() => {
 
     try{
@@ -42,6 +30,7 @@ export const fetchAllIllustrators = async() => {
     }
 }
 
+// Function to fetch all cards
 export const fetchAllCards = async() => {
 
     try{
@@ -56,6 +45,7 @@ export const fetchAllCards = async() => {
     }
 }
 
+// Function to fetch all sets
 export async function fetchAllSets(){
     try{
         const res = await api.get('/sets')
@@ -67,8 +57,23 @@ export async function fetchAllSets(){
     }
 }
 
+// Function to fetch all sets short info
+export const fetchAllSetsInfo = async() => {
+
+    try{
+        const res = await api.get('/sets/info')
+        return res.data.sets
+    }
+    catch(err){
+        console.error(err)
+        return null
+    }
+}
+
+// Function to handle card queries
 export const queryCards = async() => {
     try{
+        refreshToken()
         const res = await api.post('/search', payload)
         return {'cards': res.data.data,
                 'numOfCards': res.data.numOfCards,
@@ -96,7 +101,7 @@ export async function fetchImage(image: string | null, folder: string){
     }
 }
 
-
+// Collection fetching
 export const fetchCollection = async() => {
 
     try{
@@ -116,6 +121,7 @@ export const fetchCollection = async() => {
     }
 }
 
+// Wishlist fetching
 export const fetchWishlist = async() => {
 
     try{
@@ -126,7 +132,6 @@ export const fetchWishlist = async() => {
         })
         const wishlist = res.data.cards
         const numOfWishlist = res.data.numOfCards
-        console.log(res.data)
         return {wishlist: wishlist, numOfWishlist: numOfWishlist}
     }
     catch(err){
@@ -135,10 +140,11 @@ export const fetchWishlist = async() => {
     }
 }
 
+//Wishlist adding
 export const handleAddToWishlist = async(card_id: string) => {
-    console.log(card_id)
+
     try{
-        const res = await api.post('/wishlist/add',{
+        await api.post('/wishlist',{
             card_id: card_id
         }, {headers: {
             Authorization: `Bearer ${accessToken.value}`
@@ -150,11 +156,28 @@ export const handleAddToWishlist = async(card_id: string) => {
     }
 }
 
+// Wishlist removing
+export const handleRemoveFromWishlist = async(card_id: string) => {
+    try{
+        await api.delete('/wishlist', {
+            headers:{
+                Authorization: `Bearer ${accessToken.value}`
+            },
+            data: {
+                card_id: card_id
+            }
+        })
+    }
+    catch(err){
+        console.error(err)
+    }
+}
 
+
+// Collection adding
 export const handleAddToCollection = async(card_id: string, count: number) => {
     try{
-        console.log(card_id, count)
-        const res = await api.post('/collection/add',{
+        await api.post('/collection',{
             card_id: card_id,
             count: count
         }, {headers: {
@@ -167,4 +190,20 @@ export const handleAddToCollection = async(card_id: string, count: number) => {
     }
 }
 
-
+// Collection removing
+export const handleRemoveFromCollection = async(card_id: string, count: number = 1) => {
+    try{
+        await api.delete('/collection',{
+            headers:{
+                Authorization: `Bearer ${accessToken.value}`
+            },
+            data: {
+                card_id: card_id,
+                count: count
+            }
+        })
+    }
+    catch(err){
+        console.error(err)
+    }
+}
