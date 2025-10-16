@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { GoogleSignInButton, type CredentialResponse } from 'vue3-google-signin';
-import { accessToken, googleAuthentificationSuccess, handleLogout } from '../utilities/userAuthentification';
+import { googleAuthentificationSuccess, handleLogout } from '../utilities/userAuthentification';
+import { accessToken } from '../utilities/constants';
 import { userName, userPicture } from '../utilities/constants';
-import placeholder_image from '../assets/placeholder.png'
+import { imageFallback } from '../utilities/misc';
+import "../styles/PageHeader.css"
 
 const onLoginError = async (response: CredentialResponse) => {
     console.log('Error: ', response)
@@ -37,34 +39,10 @@ const onLoginError = async (response: CredentialResponse) => {
                 Log Out
             </button>
             <router-link to="/profile" v-if="userName">
-                <img :src="userPicture || placeholder_image"
-                    style="height: 25px; width: 25px; border-radius: 12.5px;"/>
+                <img class="profile-picture" :src="`${userPicture}`"
+                @error="imageFallback"/>
             </router-link>
         </div>
     </div>
 
 </template>
-
-<style>
-
-.header{
-    display: flex;
-    height: 100%;
-    width: 100%;
-    background-color: #202020;
-    align-items: center; 
-}
-
-.nav-bar{
-    display: flex;
-    margin-left: 10px;
-    gap: 10px;
-}
-
-.sign-in-buttons{
-    margin-left: auto;
-    margin-right: 10px;
-    gap: 10px;
-}
-
-</style>

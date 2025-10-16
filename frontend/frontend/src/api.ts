@@ -1,5 +1,6 @@
 import axios, { Axios } from "axios";
-import { accessToken, refreshToken } from "./utilities/userAuthentification";
+import { handleLogout, refreshToken } from "./utilities/userAuthentification";
+import { accessToken } from "./utilities/constants";
 
 
 const api: Axios = axios.create({
@@ -9,16 +10,25 @@ const api: Axios = axios.create({
 api.interceptors.response.use(response => {
     return response
 }, async error => {
+
     const request = error.config
-    request._retry = true
-    if (error.response.status === 401){
-        await refreshToken()
+    if (axios.isAxiosError(error) && error.response?.status === 401 && !request._retry){
+        request._retry = true
+    
+        try{
+            await refreshToken()
+            request.headers['Authorization'] = `Bearer ${accessToken.value}`
+            return api.request(request);
+        }catch (err){
+            if (axios.isAxiosError(err)){
+                if (err.response?.status === 422){
+                    handleLogout()
+                }
+            }
+            return Promise.reject(err)
+        }
     }
-    else{
-        return
-    }
-    request.headers['Authorization'] = `Bearer ${accessToken.value}`
-    return api.request(request);
+    return Promise.reject(error)
 })
 
 export default api

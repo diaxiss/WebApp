@@ -2,13 +2,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt
 import datetime
-from userDbQueries import check_user_in_db
+from scripts.userDbQueries import check_user_in_db
 from fastapi import HTTPException, status
-from env import GOOGLE_CLIENT_ID
-
-
-SECRET_KEY = 'random_string_to_protect_pokemon_data'
-ALGORITHM = "HS256"
+from scripts.env import GOOGLE_CLIENT_ID, SECRET_KEY, ALGORITHM
 
 
 def create_access_token(user: dict, expires_minutes: int = 15) -> str:

@@ -5,9 +5,8 @@ import { userName } from '../utilities/constants';
 import type { Card } from '../utilities/interfaces';
 import CardContainer from '../components/CardContainer.vue';
 import api from '../api';
-import { accessToken } from '../utilities/userAuthentification';
+import { accessToken } from '../utilities/constants';
 import placeholder_image from '../assets/placeholder.png'
-import { fetchImage } from '../utilities/aplFetch';
 
 const collection = ref<Card[]>([])
 const numOfCollection = ref<number>(0)
@@ -18,7 +17,7 @@ const picture = ref<string | null>()
 const fetchCollection = async() => {
 
     try{
-        const res = await api.get('/collection', {
+        const res = await api.get('/collection/summary', {
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
@@ -35,7 +34,7 @@ const fetchCollection = async() => {
 const fetchWishlist = async() => {
 
     try{
-        const res = await api.get('/wishlist', {
+        const res = await api.get('/wishlist/summary', {
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
@@ -56,7 +55,7 @@ onMounted(async() => {
                 Authorization: `Bearer ${accessToken.value}`
             }
         })
-        picture.value = await fetchImage(res.data.picture, 'user_images')
+        picture.value = `http://localhost:8000/user_images/${res.data.picture}`
         console.log(res.data)
     }
     catch(err){
@@ -78,7 +77,9 @@ onMounted(async() => {
                     :cards="collection"
                     :display-info="false"
                     :extra-options="false"/>
-                <button v-if="numOfCollection >= 10">View whole collection</button>
+                <router-link v-if="numOfCollection > 10" to='/collection'>
+                    <button>And more!</button>
+                </router-link>
             </div>
             <div v-else>
                 <p>Your collection is empty</p>
@@ -92,7 +93,9 @@ onMounted(async() => {
                     :cards="wishlist"
                     :display-info="false"
                     :extra-options="false"/>
-                <button v-if="numOfWishlist >= 10">View whole wishlist</button>
+                <router-link v-if="numOfWishlist > 10" to="/wishlist">
+                    <button>And more!</button>
+                </router-link>
             </div>
             <p v-else>You have no items on your wishlist</p>
         </div>

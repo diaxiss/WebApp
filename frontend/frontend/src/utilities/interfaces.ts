@@ -17,8 +17,9 @@ export interface Card{
     card_set: string,
     card_set_id: string,
     card_id: string, 
-    release_date:string
-    image: string | null
+    release_date:string,
+    image: string | null,
+    count?: number
 }
 
 export interface SetCard{

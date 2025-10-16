@@ -9,7 +9,7 @@ def get_all_sets_info() -> list:
     SELECT DISTINCT card_sets.name
     FROM card_sets
     WHERE tcgpocket = 0
-    ORDER BY card_sets.release_date ASC
+    ORDER BY card_sets.release_date DESC
     '''
     
     result = [field[0] for field in cur.execute(query).fetchall()]
@@ -47,6 +47,7 @@ def get_all_rarities() -> list:
     JOIN card_sets
     ON card.set_id = card_sets.id
     WHERE tcgpocket = 0
+    ORDER BY card_sets.release_date DESC
     '''
     
     result = [field[0] for field in cur.execute(query).fetchall()]

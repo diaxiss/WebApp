@@ -1,0 +1,31 @@
+.header{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background-color: #202020;
+    align-items: center; 
+}
+
+.nav-bar{
+    display: flex;
+    margin-left: 10px;
+    gap: 10px;
+}
+
+.sign-in-buttons{
+    display: flex;
+    margin-left: auto;
+    margin-right: 10px;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-in-buttons > a{
+    align-items: center;
+}
+.profile-picture{
+    height: 25px;
+    width: 25px;
+    border-radius: 12.5px;
+}

@@ -12,11 +12,11 @@ import Collection from './pages/Collection.vue'
 import Wishlist from './pages/Wishlist.vue'
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', component: Home },
-  { path: '/profile', component: Profile},
+  { path: '/', component: Home},
+  { path: '/profile', component: Profile, meta: { requiresAuth: true}},
   { path: '/sets', component: Sets },
-  { path: '/collection', component: Collection },
-  { path: '/wishlist', component: Wishlist },
+  { path: '/collection', component: Collection, meta: { requiresAuth: true} },
+  { path: '/wishlist', component: Wishlist, meta: { requiresAuth: true} },
   { path: '/sets/:id', component: SetDetails, props: true}
 ]
 
@@ -24,6 +24,19 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = Boolean(localStorage.getItem('accessToken'))
+
+  if(to.meta.requiresAuth && !isLoggedIn) {
+    next('/')
+  }
+  else{
+    next()
+  }
+})
+
+
 const app = createApp(App)
 
 app.use(router)

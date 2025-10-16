@@ -63,3 +63,50 @@ def remove_card_from_wishlist(card_id: str, sub: str) -> None:
 
     cur.execute(query, [sub, card_id])
     con.commit()
+
+def get_user_collection(sub: str, limit: int = -1):
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    baseQuery = f'''
+    FROM collection
+    JOIN card
+    ON collection.card_id = card.id
+    JOIN card_sets
+    ON card.set_id = card_sets.id 
+    WHERE google_id = ?
+    ORDER BY card_sets.release_date
+    '''
+    cards = cur.execute('SELECT card_id, count, card.name, card.image '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
+
+    for i, item in enumerate(cards):
+        cards[i] = {'card_id': item[0], 'count': item[1], 'name': item[2], 'image': item[3]}
+    
+    totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
+    total_cards = cur.execute(totalCardQuery, [sub]).fetchall()[0]
+
+    return {'cards': cards, 'numOfCards': total_cards}
+
+
+def get_user_wishlist(sub: str, limit: int = -1):
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    baseQuery = f'''
+    FROM wishlist
+    JOIN card
+    ON wishlist.card_id = card.id
+    JOIN card_sets
+    ON card.set_id = card_sets.id 
+    WHERE google_id = ?
+    ORDER BY card_sets.release_date
+    '''
+    cards = cur.execute('SELECT card_id, card.name, card.image '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
+
+    for i, item in enumerate(cards):
+        cards[i] = {'card_id': item[0], 'name': item[1], 'image': item[2]}
+    
+    totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
+    total_cards = cur.execute(totalCardQuery, [sub]).fetchall()[0]
+
+    return {'cards': cards, 'numOfCards': total_cards}

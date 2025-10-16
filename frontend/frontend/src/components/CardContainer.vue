@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import type { Card } from '../utilities/interfaces';
-import { fetchImage } from '../utilities/aplFetch';
 import '../styles/CardContainer.css'
+
+import { onMounted, onUnmounted, ref } from 'vue';
+
 import placeholder_image from '../assets/placeholder.png'
-import { handleAddToWishlist } from '../utilities/aplFetch';
-import { handleAddToCollection } from '../utilities/aplFetch';
-import { handleRemoveFromCollection } from '../utilities/aplFetch';
-import { handleRemoveFromWishlist } from '../utilities/aplFetch';
+import { imageFallback } from '../utilities/misc';
+import type { Card } from '../utilities/interfaces';
+import { collection, wishlist } from '../utilities/constants';
 
 const props = defineProps<{
   cards: Card[]
@@ -15,15 +14,22 @@ const props = defineProps<{
   extraOptions: boolean
 }>()
 
-const images = ref<Record<string, string>>({})
+const emits = defineEmits<{
+  (e: 'wishlistAdd', card: Card): void;
+  (e: 'wishlistRemove', card: Card): void;
+  (e: 'collectionAdd', card: Card): void;
+  (e: 'collectionRemove', card: Card): void;
+}>();
+
 const fullscreenImage = ref<string | null>(null);
 const imageWrapper = ref<HTMLElement | null>(null)
 
 
+//----------------------
+// Fullscreen card
+//----------------------
 async function openImage(image: string | null){
-    const result_image = await fetchImage(image, 'images')
-    console.log(result_image)
-    fullscreenImage.value = result_image
+    fullscreenImage.value = image ? `http://localhost:8000/images/${image}` : placeholder_image
 }
 
 function closeImage(){
@@ -33,13 +39,11 @@ function closeImage(){
 function handleMouseEnter() {
   if (!imageWrapper.value) return
 
+  void imageWrapper.value.offsetWidth;
+
   // Temporary small transition on hover start
-  imageWrapper.value.style.transition = 'transform 0.15s ease-out'
-  
-  // Remove it almost immediately so mousemove is instant
-  setTimeout(() => {
-    if (imageWrapper.value) imageWrapper.value.style.transition = 'none'
-  }, 200) // 50ms is enough to apply a subtle effect
+  imageWrapper.value.style.transition = 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)'
+  imageWrapper.value.style.transform = 'perspective(800px) scale(1.05)'
 }
 
 function handleMouseMove(e: MouseEvent){
@@ -55,6 +59,7 @@ function handleMouseMove(e: MouseEvent){
     const rotateX = ((y- centerY) / centerY) * -10
     const rotateY = ((x- centerX) / centerX) * 10
 
+    imageWrapper.value.style.transition = `transform 0.1s ease-out`
     imageWrapper.value.style.transform = `
         perspective(800px)
         rotateX(${rotateX}deg)
@@ -87,33 +92,17 @@ onUnmounted(() => {
   })
 })
 
-watch(
-  () => props.cards,
-  async (newCards) => {
-    const newImages: Record<string, string> = {}
-    for (const card of newCards){
-      try{
-        newImages[card.card_id] = await fetchImage(card.image, 'images')
-      }
-      catch(err){
-        console.error(err)
-        newImages[card.card_id] = placeholder_image
-      }
-    }
-    images.value = newImages
-  },
-  {immediate:true, deep: true}
-)
-
 </script>
 
 <template>
   <div class="query-container">
 
-    <div class="query-item-container" v-for="result in cards" :key="result.card_id">
+    <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
-      <img class='card-image' loading="lazy" :src="images[result.card_id] || placeholder_image"
-        :alt="`${result.name} - ${result.card_id}`" @click="openImage(result.image)">
+      <img class='card-image' loading="lazy" :src="`http://localhost:8000/images/${result.image}`"
+        :alt="`${result.name} - ${result.card_id}`" 
+        @click="openImage(result.image)"
+        @error="imageFallback"/>
 
       <div v-if="displayInfo">
         <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
@@ -122,22 +111,39 @@ watch(
 
       <!-- Extra options for wishlist/collections -->
       <div v-if="extraOptions" class="extra-options">
+        <div class="wishlist-buttons"
+          v-if="!collection.find(card => card.card_id === result.card_id)">
+          <button
+            v-if="!wishlist.find(card => card.card_id === result.card_id)"
+            @click="$emit('wishlistAdd', result)">
+            <span >♡</span>
+          </button>
 
-        <button @click="handleAddToWishlist(result.card_id)">
-          <span >❤️</span>
-        </button>
+          <button
+            v-else
+            @click="$emit('wishlistRemove', result)">
+            <span>❤️</span>
+          </button>
+        </div>
 
-        <button @click="handleRemoveFromWishlist(result.card_id)">
-          <span>💔</span>
-        </button>
+        <span>{{ result.count ||
+        collection[collection.findIndex(card =>{
+          return card.card_id === result.card_id
+        })]?.count }}</span>
 
-        <button @click="handleAddToCollection(result.card_id, 1)">
-          <span>+</span>
-        </button>
+        <div class="collection-buttons">
+          <button 
+            @click="$emit('collectionAdd', result)">
+            <span>+</span>
+          </button>
 
-        <button @click="handleRemoveFromCollection(result.card_id, 1)">
-          <span>-</span>
-        </button>
+          <button 
+            v-if="collection.find(card => card.card_id === result.card_id)"
+            @click="$emit('collectionRemove', result)">
+            <span>-</span>
+          </button>
+        </div>
+
       </div>
 
     </div>
