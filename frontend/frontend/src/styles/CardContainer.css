@@ -1,12 +1,13 @@
 .query-container{
     display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    justify-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(125px, 20%, 200px), 1fr));
+    justify-content: start;
     width: 100%;
     height: 100%;
-    gap: 10px;
+    gap: 1rem;
 }
 .card-image{
+    aspect-ratio: 0.7159;
     height: 100%;
     width: 100%;
     cursor: zoom-in;
@@ -24,36 +25,6 @@
 .query-item-container > div > p{
     margin: 0;
     padding: 0;
-}
-
-.image-overlay{
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: #000000AA;
-    height: 100%;
-    width: 100%;
-}
-
-.image-wrapper{
-    cursor:grab;
-    
-    height: 80%;
-}
-
-.image-wrapper > img{
-    aspect-ratio: 0.7159;
-    /* width: 100%; */
-    height: 100%;
-    object-fit: fill;
-}
-
-.query-item-container > div > p{
     cursor:pointer;
 }
 
@@ -71,7 +42,6 @@
     align-items: center;
     justify-content: center;
 }
-
 
 .wishlist-buttons{
     display: flex;

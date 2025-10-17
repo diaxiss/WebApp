@@ -59,7 +59,7 @@ async def handle_logout(response: Response):
         httponly=True,
         secure=True,
         samesite='none'
-    )
+        )
     return {'msg': 'Logged out'}
 
 

@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/sets', component: Sets },
   { path: '/collection', component: Collection, meta: { requiresAuth: true} },
   { path: '/wishlist', component: Wishlist, meta: { requiresAuth: true} },
-  { path: '/sets/:id', component: SetDetails, props: true}
+  { path: '/sets/:id', component: SetDetails}
 ]
 
 export const router = createRouter({
@@ -25,7 +25,7 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const isLoggedIn = Boolean(localStorage.getItem('accessToken'))
 
   if(to.meta.requiresAuth && !isLoggedIn) {

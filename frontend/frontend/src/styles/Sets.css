@@ -1,0 +1,14 @@
+.set-holder{
+    display: grid;
+    grid-template-columns: repeat(10,auto);
+    gap: 5px
+}
+
+.set-item{
+    background-color: darkblue;
+    align-content: center;
+}
+
+.set-item > p{
+    text-align: center;
+}

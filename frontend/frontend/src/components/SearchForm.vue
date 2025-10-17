@@ -1,52 +1,22 @@
 <script setup lang='ts'>
-import type { SearchPayload } from '../utilities/interfaces.ts';
 import { payload } from '../utilities/constants.ts';
+import { useCardSearch } from '../composables/useCardSearch.ts';
+import { useCardMeta } from '../composables/useCardMeta.ts';
 
 
-//-----------------------
-// Props passed through
-//----------------------
 
-defineProps<{
-  allRarities: String[]
-  allSets: String[]
-  allIllustrators: String[]
-}>()
-
-
-//----------------
-// Define emits
-//----------------
-
-const emits = defineEmits<{
-    (e: 'submit'): void
-    (f: 'change'): void
-}>()
+const {fetchQuery, setLimit} = useCardSearch()
+const {allRarities, allSets, allIllustrators} = useCardMeta()
 
 //------------------------------
 // Functions to handle submits
 //------------------------------
 
-// Handles form submit
-const handleSubmit = async() => {
-    console.log(payload as SearchPayload);
-    (Object.keys(payload) as Array<keyof SearchPayload>).forEach(key => {
-        if (payload[key] === "" || payload[key] === null) delete payload[key];
-    });
-    if (Object.keys(payload).length <= 2){
-        console.log(payload as SearchPayload)
-        console.log("Not enought form data")
-        return
-    }
-    payload.offset = 0
-    emits('submit')
-}
-
 </script>
 
 
 <template>
-    <form class="submit-form" @submit.prevent="handleSubmit">
+    <form class="submit-form" @submit.prevent="fetchQuery">
 
         <label for="card_name">Name: </label>
         <input placeholder = "Name..." id="card_name" v-model="payload.name">
@@ -89,7 +59,7 @@ const handleSubmit = async() => {
         <div>
             <label for="limit">Limit per page:</label>
             <select id="limit" v-model="payload.limit" 
-                    @change="{$emit('change'); payload.offset = 0}">
+                    @change="setLimit">
                 <option :value="10">10</option>
                 <option :value="25">25</option>
                 <option :value="50">50</option>

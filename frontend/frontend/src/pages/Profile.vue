@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+
 import PageHeader from '../components/PageHeader.vue';
-import { userName } from '../utilities/constants';
-import type { Card } from '../utilities/interfaces';
 import CardContainer from '../components/CardContainer.vue';
-import api from '../api';
+
+import type { Card } from '../utilities/interfaces';
+
 import { accessToken } from '../utilities/constants';
+import { userName } from '../utilities/constants';
+
 import placeholder_image from '../assets/placeholder.png'
+import api from '../api';
 
 const collection = ref<Card[]>([])
 const numOfCollection = ref<number>(0)

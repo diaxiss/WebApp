@@ -83,7 +83,7 @@ def get_user_collection(sub: str, limit: int = -1):
         cards[i] = {'card_id': item[0], 'count': item[1], 'name': item[2], 'image': item[3]}
     
     totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
-    total_cards = cur.execute(totalCardQuery, [sub]).fetchall()[0]
+    total_cards = cur.execute(totalCardQuery, [sub]).fetchone()[0]
 
     return {'cards': cards, 'numOfCards': total_cards}
 
@@ -107,6 +107,6 @@ def get_user_wishlist(sub: str, limit: int = -1):
         cards[i] = {'card_id': item[0], 'name': item[1], 'image': item[2]}
     
     totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
-    total_cards = cur.execute(totalCardQuery, [sub]).fetchall()[0]
+    total_cards = cur.execute(totalCardQuery, [sub]).fetchone()[0]
 
     return {'cards': cards, 'numOfCards': total_cards}

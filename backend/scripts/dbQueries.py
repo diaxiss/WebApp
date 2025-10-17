@@ -177,7 +177,7 @@ def query_card(
     return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'image']), numOfPages
 
 
-def get_all_cards(limit: int, offset: int) -> tuple[list, int]:
+def get_all_cards(limit: int = 10, offset: int = 0) -> tuple[list, int]:
 
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
@@ -201,7 +201,7 @@ def get_all_cards(limit: int, offset: int) -> tuple[list, int]:
     ON card.set_id = card_sets.id
     WHERE card_sets.tcgpocket = 0
     '''
-    numOfCardsResult = cur.execute(numOfCards).fetchall()[0]
+    numOfCardsResult = cur.execute(numOfCards).fetchone()[0]
 
     con.close()
     return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'image']), numOfCardsResult

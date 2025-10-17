@@ -52,7 +52,10 @@ async def get_illustrators():
     result = get_all_illustrators()
     return {'illustrators': result}
 
-
+@router.get('/cards')
+async def get_cards():
+    result, numOfCards = get_all_cards(limit = 100000)
+    return {'numOfCards': numOfCards, 'cards': result, }
 
 #----------------------------------------
 # GET with parameters
@@ -92,9 +95,7 @@ async def search(request: SearchRequest):
 
     return {"data": result,  'numOfCards': numOfCards} 
 
-
-
 @router.post('/cards')
-async def get_all_items(request: CardsRequest):
+async def get_all_items_limit(request: CardsRequest):
     result, numOfCards = get_all_cards(request.limit, request.offset)
     return {"cards": result, 'numOfCards': numOfCards}

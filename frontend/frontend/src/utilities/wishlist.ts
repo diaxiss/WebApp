@@ -1,5 +1,5 @@
 import api from "../api"
-import { accessToken, wishlist } from "./constants"
+import { accessToken } from "./constants"
 import type { Card } from "./interfaces"
 
 // Wishlist fetching
