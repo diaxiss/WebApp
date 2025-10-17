@@ -6,15 +6,6 @@ from scripts.userDbQueries import check_user_in_db
 from fastapi import HTTPException, status
 from scripts.env import GOOGLE_CLIENT_ID, SECRET_KEY, ALGORITHM
 
-
-def create_access_token(user: dict, expires_minutes: int = 15) -> str:
-    to_encode = user.copy()
-    now = datetime.datetime.now(datetime.UTC)
-    expire = now + datetime.timedelta(minutes=expires_minutes)
-    to_encode.update({'exp': expire, 'iat': now})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
 def decode_token(token: str):
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -27,12 +18,21 @@ def decode_token(token: str):
             detail="Invalid or expired token",
         )
 
-
-
-def create_refresh_token(user: dict, expires_delta: int = 60*60*24*7):
+def create_access_token(user: dict, expires_minutes: int = 15) -> str:
     to_encode = user.copy()
     now = datetime.datetime.now(datetime.UTC)
-    expire = now + datetime.timedelta(minutes=expires_delta)
+    expire = now + datetime.timedelta(minutes=expires_minutes)
+    to_encode.update({'exp': expire, 'iat': now})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+
+
+
+def create_refresh_token(user: dict, expires_minutes: int = 60*60*24*7):
+    to_encode = user.copy()
+    now = datetime.datetime.now(datetime.UTC)
+    expire = now + datetime.timedelta(minutes=expires_minutes)
     to_encode.update({'exp': expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

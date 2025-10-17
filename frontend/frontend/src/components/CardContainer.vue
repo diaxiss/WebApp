@@ -3,7 +3,7 @@ import '../styles/CardContainer.css'
 
 import { imageFallback } from '../utilities/misc';
 import type { Card } from '../utilities/interfaces';
-import { collection, wishlist } from '../utilities/constants';
+import { accessToken, collection, wishlist } from '../utilities/constants';
 import FullscreenImage from './FullscreenImage.vue';
 import { useWishlist } from '../composables/useWishlist';
 import { useCollection } from '../composables/useCollection';
@@ -24,7 +24,7 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 </script>
 
 <template>
-  
+
   <FullscreenImage/>
 
   <div class="query-container">
@@ -42,7 +42,7 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
       </div>
 
       <!-- Extra options for wishlist/collections -->
-      <div v-if="extraOptions" class="extra-options">
+      <div v-if="extraOptions && accessToken" class="extra-options">
         <div class="wishlist-buttons"
           v-if="!collection.find(card => card.card_id === result.card_id)">
           <button

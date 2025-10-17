@@ -12,7 +12,11 @@ api.interceptors.response.use(response => {
 }, async error => {
 
     const request = error.config
-    if (axios.isAxiosError(error) && error.response?.status === 401 && !request._retry){
+
+    if (axios.isAxiosError(error) &&
+        error.response?.status === 401 &&
+        !request._retry &&
+        !request.url?.includes('/refresh')){
         request._retry = true
     
         try{
@@ -20,11 +24,7 @@ api.interceptors.response.use(response => {
             request.headers['Authorization'] = `Bearer ${accessToken.value}`
             return api.request(request);
         }catch (err){
-            if (axios.isAxiosError(err)){
-                if (err.response?.status === 422){
-                    handleLogout()
-                }
-            }
+            handleLogout()
             return Promise.reject(err)
         }
     }
