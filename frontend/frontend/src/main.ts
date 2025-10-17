@@ -36,7 +36,6 @@ router.beforeEach((to, _, next) => {
   }
 })
 
-
 const app = createApp(App)
 
 app.use(router)

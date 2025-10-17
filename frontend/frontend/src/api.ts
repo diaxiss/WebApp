@@ -1,6 +1,6 @@
 import axios, { Axios } from "axios";
 import { handleLogout, refreshToken } from "./utilities/userAuthentification";
-import { accessToken } from "./utilities/constants";
+import { accessToken, isLoggedOut } from "./utilities/constants";
 
 
 const api: Axios = axios.create({
@@ -16,7 +16,8 @@ api.interceptors.response.use(response => {
     if (axios.isAxiosError(error) &&
         error.response?.status === 401 &&
         !request._retry &&
-        !request.url?.includes('/refresh')){
+        !request.url?.includes('/refresh') &&
+        !isLoggedOut.value){
         request._retry = true
     
         try{

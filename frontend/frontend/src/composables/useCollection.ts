@@ -11,7 +11,7 @@ export function useCollection() {
             return c.card_id === card.card_id
         })
 
-        if (wishlistIndex !== 1) wishlist.value.splice(wishlistIndex, 1)
+        if (wishlistIndex !== -1) wishlist.value.splice(wishlistIndex, 1)
 
         const index = collection.value.findIndex(c => {
             return c.card_id === card.card_id
@@ -29,7 +29,7 @@ export function useCollection() {
                 collection.value[index].count -= 1;
             }else{
                 collection.value.pop()
-                if (wishlistIndex !== 1) wishlist.value.splice(wishlistIndex, 0, card)
+                if (wishlistIndex !== -1) wishlist.value.splice(wishlistIndex, 0, card)
             }
         }
     }

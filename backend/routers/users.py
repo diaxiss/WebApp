@@ -35,8 +35,8 @@ async def handle_authentification_request(request: AuthRequest, response: Respon
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,           # must be True in production (HTTPS)
-        samesite="none"        # allow cross-site requests
+        secure=True,
+        samesite="none"
     )
     return {'user': {'name': user, 'picture': picture, 'email': email}, 'access_token': access_token}
 
@@ -53,13 +53,7 @@ async def fetch_user_info(token: str = Depends(oauth2_scheme)):
 
 @router.post('/logout')
 async def handle_logout(response: Response):
-    response.delete_cookie(
-        key='refresh_token',
-        path='/',
-        httponly=True,
-        secure=True,
-        samesite='none'
-        )
+    response.delete_cookie(key="refresh_token")
     return {'msg': 'Logged out'}
 
 

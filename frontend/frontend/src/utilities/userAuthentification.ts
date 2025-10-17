@@ -1,8 +1,9 @@
 import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
-import { userPicture, userName, accessToken, collection, wishlist } from "./constants"
+import { userPicture, userName, accessToken, collection, wishlist, isLoggedOut } from "./constants"
 import { fetchCollection } from "./collection"
 import { fetchWishlist } from "./wishlist"
+import { router } from "../main"
 
 function setToken(token: string){
     accessToken.value = token
@@ -10,17 +11,26 @@ function setToken(token: string){
 }
 
 export const handleLogout = async() => {
-    ['accessToken', 'user', 'image'].forEach(key => localStorage.removeItem(key))
+    isLoggedOut.value = true
+    try{
+        await api.post('/logout',{},{
+            withCredentials: true
+        })
+    } catch(err){
+        console.error('Logout API failed', err)
+    }
+
+    ['accessToken', 'user', 'image'].forEach
+    (key => localStorage.removeItem(key))
 
     accessToken.value = null
     userName.value = null
     userPicture.value = null
+    collection.value = []
+    wishlist.value = []
 
-    try{
-        await api.post('/logout')
-    } catch(err){
-        console.error('Logout API failed', err)
-    }
+    router.push('/')
+
 }
 
 export const googleAuthentificationSuccess = async(response: CredentialResponse) => {

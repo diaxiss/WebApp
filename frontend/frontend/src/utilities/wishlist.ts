@@ -16,7 +16,7 @@ export const fetchWishlist = async() => {
         return {wishlist: wishlist, numOfWishlist: numOfWishlist}
     }
     catch(err){
-        console.error(err)
+        console.error("Couldn't fetch wishlist")
         return {wishlist: [], numOfWishlist: 0}
     }
 }

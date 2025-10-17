@@ -17,7 +17,7 @@ export const fetchCollection = async() => {
         return {collection: collection, numOfCollection: numOfCollection}
     }
     catch(err){
-        console.error(err)
+        console.error("Couldn't fetch collection")
         return {collection: [], numOfCollection: 0}
     }
 }
