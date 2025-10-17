@@ -13,6 +13,9 @@
 }
 
 .image-wrapper{
+    will-change: transform;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
     cursor:grab;
     height: 80%;
 }

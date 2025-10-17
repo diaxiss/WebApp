@@ -4,6 +4,7 @@ import placeholder_image from '../assets/placeholder.png'
 
 const fullscreenImage = ref<string | null>(null);
 const imageWrapper = ref<HTMLElement | null>(null)
+let animationFrame: number | null = null;
 
 export function useFullscreenImage(){
 
@@ -30,31 +31,36 @@ export function useFullscreenImage(){
     }
 
     function handleMouseMove(e: MouseEvent){
+
         if(!imageWrapper.value) return
 
-        const rect = imageWrapper.value.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
+        if(animationFrame) cancelAnimationFrame(animationFrame)
 
-        const centerX = rect.width / 2
-        const centerY = rect.height / 2
+        animationFrame = requestAnimationFrame(() => {
+            const rect = imageWrapper.value!.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const y = e.clientY - rect.top
 
-        const rotateX = ((y- centerY) / centerY) * -10
-        const rotateY = ((x- centerX) / centerX) * 10
+            const centerX = rect.width / 2
+            const centerY = rect.height / 2
 
-        imageWrapper.value.style.transition = `transform 0.1s ease-out`
-        imageWrapper.value.style.transform = `
+            const rotateX = ((y- centerY) / centerY) * -10
+            const rotateY = ((x- centerX) / centerX) * 10
+
+        imageWrapper.value!.style.transition = `transform 0.1s ease-out`
+        imageWrapper.value!.style.transform = `
             perspective(800px)
             rotateX(${rotateX}deg)
             rotateY(${rotateY}deg)
             scale(1.05)
         `
+        })
     }
 
     function resetTransform(){
 
         if(!imageWrapper.value) return
-        imageWrapper.value.style.transition = `transform 0.2s ease-in`;
+        imageWrapper.value.style.transition = `transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)`;
         imageWrapper.value.style.transform = `
             perspective(800px)
             rotateX(0deg)
