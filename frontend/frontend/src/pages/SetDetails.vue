@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import PageHeader from '../components/PageHeader.vue';
@@ -15,6 +15,7 @@ const {loadedCards} = useCardSearch()
 const route = useRoute()
 const set_id: string = route.params.id as string
 
+const imageExists = ref(true)
 
 onMounted(() => {
     fetchSet(set_id)
@@ -25,7 +26,12 @@ onMounted(() => {
 
 <template>
     <PageHeader/>
-    <h1> {{ loadedCards[0]?.card_set }} </h1>
+    <img v-if="imageExists" 
+        :src="`http://localhost:8000/set_logo/${set_id}.png`"
+        style="max-width: 400px; max-height: 200px;"
+        @error="imageExists = false"
+    />
+    <h1 v-else>{{ loadedCards[0]?.card_set }}</h1>
     <CardContainer
         :cards="loadedCards"
         :display-info="false"

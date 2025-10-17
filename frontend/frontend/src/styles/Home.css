@@ -3,9 +3,3 @@ body{
     padding: 0;
 }
 
-.submit-form{
-    display:flex;
-    flex-direction: column;
-}
-
-

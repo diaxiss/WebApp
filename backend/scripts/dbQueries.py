@@ -66,7 +66,8 @@ def get_all_illustrators() -> list:
     FROM card
     JOIN card_sets
     ON card.set_id = card_sets.id
-    WHERE tcgpocket = 0
+    WHERE tcgpocket = 0 AND card.illustrator <> "" AND card.illustrator IS NOT NULL
+    ORDER BY card.illustrator ASC
     '''
 
     result = [field[0] for field in cur.execute(query).fetchall()]
@@ -102,7 +103,7 @@ def parseConditions(params) -> tuple[list, list]:
 
         match param:
 
-            case 'name' | 'illustrator' | 'rarity' | 'card_id':
+            case 'name' | 'illustrator' | 'rarity' | 'id':
                 conditions.append(f"LOWER(card.{param}) LIKE LOWER(?)")
                 values.append(f'{value}%')
 
@@ -148,7 +149,7 @@ def query_card(
     cur = con.cursor()
 
     query = '''
-    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date, card.image, COUNT(*) OVER() as num_of_pages
+    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date, COUNT(*) OVER() as num_of_pages
     FROM card
     LEFT JOIN card_sets
     ON card.set_id = card_sets.id
@@ -174,7 +175,7 @@ def query_card(
         item = item[:-1]
 
     con.close()
-    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'image']), numOfPages
+    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date']), numOfPages
 
 
 def get_all_cards(limit: int = 10, offset: int = 0) -> tuple[list, int]:
@@ -183,7 +184,7 @@ def get_all_cards(limit: int = 10, offset: int = 0) -> tuple[list, int]:
     cur = con.cursor()
 
     query = '''
-    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date, card.image
+    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date
     FROM card
     LEFT JOIN card_sets
     ON card.set_id = card_sets.id
@@ -204,4 +205,4 @@ def get_all_cards(limit: int = 10, offset: int = 0) -> tuple[list, int]:
     numOfCardsResult = cur.execute(numOfCards).fetchone()[0]
 
     con.close()
-    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'image']), numOfCardsResult
+    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date']), numOfCardsResult

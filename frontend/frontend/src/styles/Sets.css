@@ -1,12 +1,21 @@
 .set-holder{
-    display: grid;
-    grid-template-columns: repeat(10,auto);
-    gap: 5px
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    justify-content: center;
+    gap: 1rem;
 }
 
 .set-item{
+    display: flex;
+    flex-direction: column;
     background-color: darkblue;
-    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.set-item > img {
+    height: 80%;
+    object-fit: contain;
 }
 
 .set-item > p{

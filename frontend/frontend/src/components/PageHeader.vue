@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { GoogleSignInButton, type CredentialResponse } from 'vue3-google-signin';
-import { googleAuthentificationSuccess, handleLogout } from '../utilities/userAuthentification';
-import { accessToken } from '../utilities/constants';
-import { userName, userPicture } from '../utilities/constants';
-import { imageFallback } from '../utilities/misc';
+
 import "../styles/PageHeader.css"
+
+import { GoogleSignInButton, type CredentialResponse } from 'vue3-google-signin';
+
+import { googleAuthentificationSuccess, handleLogout } from '../utilities/userAuthentification';
+import { imageFallback } from '../utilities/misc';
+
+
+import { userName, userPicture } from '../utilities/constants';
+import { accessToken } from '../utilities/constants';
+
 
 const onLoginError = async (response: CredentialResponse) => {
     console.log('Error: ', response)

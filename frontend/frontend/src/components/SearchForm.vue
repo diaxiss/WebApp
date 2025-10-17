@@ -1,4 +1,7 @@
 <script setup lang='ts'>
+
+import '../styles/SearchForm.css'
+
 import { payload } from '../utilities/constants.ts';
 import { useCardSearch } from '../composables/useCardSearch.ts';
 import { useCardMeta } from '../composables/useCardMeta.ts';
@@ -23,24 +26,24 @@ const {allRarities, allSets, allIllustrators} = useCardMeta()
 
 
         <label for="illustrator">Illustrator: </label>
-        <input placeholder = "Illustrator..." id="illustrator" list="card-illustrators" v-model="payload.illustrator">
-        <datalist id="card-illustrators">
+        <select id="set" v-model="payload.illustrator">
+            <option @select="payload.illustrator = ''"> </option>
             <option v-for="illustrator in allIllustrators" :value=illustrator>{{illustrator}}</option>
-        </datalist>
+        </select>
 
 
         <label for="rarity">Rarity: </label>
-        <input placeholder = "Rarity..." id="rarity" list = 'card-rarities' v-model="payload.rarity">
-        <datalist id="card-rarities">
+        <select id="rarity" v-model="payload.rarity">
+            <option @select="payload.rarity = ''"> </option>
             <option v-for="rarity in allRarities" :value=rarity>{{rarity}}</option>
-        </datalist>
+         </select>
 
 
         <label for="set">Set: </label>
-        <input placeholder = "Set..." id="set" type='text' list="card-sets" v-model="payload.card_set">
-        <datalist id="card-sets">
+        <select id="set" v-model="payload.card_set">
+            <option @select="payload.card_set = ''"> </option>
             <option v-for="set in allSets" :value=set>{{set}}</option>
-        </datalist>
+        </select>
 
 
         <label for="card_id">Card id: </label>
@@ -49,7 +52,7 @@ const {allRarities, allSets, allIllustrators} = useCardMeta()
 
         <label id="release_date">Release date: </label>
 
-        <div>
+        <div class="release-date">
             <input placeholder = "Release date..." aria-labelledby="release_date" id="release_date_from" type="date" v-model="payload.release_date_from" :max="(payload.release_date_to as string)">
             <span> - </span>
             <input placeholder = "Release date..." aria-labelledby="release_date" id="release_date_to" type="date" v-model="payload.release_date_to" :min="(payload.release_date_from as string)">
@@ -66,6 +69,6 @@ const {allRarities, allSets, allIllustrators} = useCardMeta()
                 <option :value="100">100</option>
             </select>
         </div>
-        <input type="submit">
+        <button type="submit">Submit</button>
     </form>
 </template>

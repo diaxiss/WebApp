@@ -15,17 +15,17 @@ export function usePagination(){
         const pages = new Array<number | string>();
 
         pages.push(1)
-        if (currentPage.value > 4){
+        if (currentPage.value > 3){
             pages.push('...')
         }
 
-        const start = Math.max(2, currentPage.value-2);
-        const end = Math.min(numOfPages.value - 1, currentPage.value + 2)
+        const start = Math.max(2, currentPage.value-1);
+        const end = Math.min(numOfPages.value - 1, currentPage.value + 1)
 
         for(let i = start; i<= end; i++){
             pages.push(i)
         }
-        if (currentPage.value < numOfPages.value-3){
+        if (currentPage.value < numOfPages.value-2){
             pages.push('...')
         }
 

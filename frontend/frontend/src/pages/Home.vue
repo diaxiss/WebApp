@@ -27,7 +27,7 @@ onMounted(async () => {
 
     <CardContainer
         :cards="loadedCards"
-        :display-info="true"
+        :display-info="false"
         :extra-options="true"/>
 
     <PageIndicator/>

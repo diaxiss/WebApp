@@ -1,0 +1,30 @@
+.submit-form{
+    display:flex;
+    padding: 0 10px;
+    margin: auto;
+    flex-direction: column;
+    max-width: 1000px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.submit-form > input{
+    color: white;
+    font-weight: bold;
+    font-size: 1 rem;
+    border: 0;
+    border-radius: 0.6rem;
+    height: 30px;
+    width: 100%;
+}
+
+.submit-form > select{
+    width: 10rem;
+}
+
+.release-date{
+    display: flex;
+    gap:20px;
+    align-items: center;
+}

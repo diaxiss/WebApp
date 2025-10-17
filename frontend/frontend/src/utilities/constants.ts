@@ -40,11 +40,14 @@ export const currentPage = ref<number>(1)
 //----------------------------------
 // User data and authentification
 //----------------------------------
+
 export const accessToken = ref(localStorage.getItem('accessToken'))
+
+export const isLoggedOut = ref(accessToken.value === null)
 
 export const userName = ref<string | null>(localStorage.getItem('user'))
 export const userPicture = ref<string | null>(`http://localhost:8000/user_images/${localStorage.getItem('image')}.png`)
+
+
 export const collection = ref<Card[]>([])
 export const wishlist = ref<Card[]>([])
-
-export const isLoggedOut = ref(accessToken.value === null)

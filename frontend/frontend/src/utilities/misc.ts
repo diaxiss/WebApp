@@ -1,4 +1,4 @@
-import placeholder_image from '../assets/placeholder.png'
+import placeholder_image from '../assets/placeholderCard.webp'
 
 export function imageFallback(event: Event){
   console.log(event)

@@ -1,6 +1,6 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
-import placeholder_image from '../assets/placeholder.png'
+import placeholder_image from '../assets/placeholderCard.webp'
 
 const fullscreenImage = ref<string | null>(null);
 const imageWrapper = ref<HTMLElement | null>(null)
@@ -12,8 +12,20 @@ export function useFullscreenImage(){
     //----------------------
     // Fullscreen card
     //----------------------
-    async function openImage(image: string | null){
-        fullscreenImage.value = image ? `http://localhost:8000/images/${image}` : placeholder_image
+    async function openImage(image: string){
+        const url = `http://localhost:8000/images/${image}.png`
+        // Try to load the image
+        const img = new Image()
+        img.src = url
+
+        // Wait for success or error
+        img.onload = () => {
+            fullscreenImage.value = url
+        }
+
+        img.onerror = () => {
+            fullscreenImage.value = placeholder_image
+        }
     }
 
     function closeImage(){
@@ -76,6 +88,7 @@ export function useFullscreenImage(){
         })  
     })
     onUnmounted(() => {
+    closeImage()
     window.removeEventListener('keydown', e => {
         if (e.key === 'Escape') closeImage()
         })

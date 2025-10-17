@@ -31,9 +31,9 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 
     <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
-      <img class='card-image' loading="lazy" :src="`http://localhost:8000/images/${result.image}`"
+      <img class='card-image' loading="lazy" :src="`http://localhost:8000/images/${result.card_id}.png`"
         :alt="`${result.name} - ${result.card_id}`" 
-        @click="openImage(result.image)"
+        @click="openImage(result.card_id)"
         @error="imageFallback"/>
 
       <div v-if="displayInfo">

@@ -48,7 +48,7 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
         collection.value = collectionRes.collection
         const wishlistRes = await fetchWishlist()
         wishlist.value = wishlistRes.wishlist
-
+        
         return 'Success'
     }
     catch (err){
