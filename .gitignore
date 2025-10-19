@@ -3,8 +3,9 @@ __pycache__
 !.gitignore
 env.py
 node_modules/
-backend/data/images/*
-backend/data/user_images/*
-backend/data/set_logo/*
-backend/data/set_symbol/*
+backend/data/images/*.png
+backend/data/user_images/*.png
+backend/data/set_logo/*.png
+backend/data/set_symbol/*.png
 user_images/*
+!.gitkeep

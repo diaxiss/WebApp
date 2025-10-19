@@ -29,16 +29,17 @@ app.mount('/user_images', StaticFiles(directory='./data/user_images'), name = 'u
 app.mount('/set_logo', StaticFiles(directory='./data/set_logo'), name = 'set_logo')
 app.mount('/set_symbol', StaticFiles(directory='./data/set_symbol'), name = 'set_symbol')
 # Allow requests from frontend
-origins = [
-    "http://localhost:5173",  # Vite dev server
-    "http://127.0.0.1:5173",
-    "http://192.168.5.16:5173"
-]
+# origins = [
+#     "http://localhost:5173",  # Vite dev server
+#     "http://127.0.0.1:5173",
+#     "http://192.168.5.16:5173"
+# ]
 
 # CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    # allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
