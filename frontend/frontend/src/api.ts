@@ -2,9 +2,10 @@ import axios, { Axios } from "axios";
 import { handleLogout, refreshToken } from "./utilities/userAuthentification";
 import { accessToken, isLoggedOut } from "./utilities/constants";
 
-
+console.log(import.meta.env.VITE_API_URL)
 const api: Axios = axios.create({
-    baseURL: "http://127.0.0.1:8000"
+    // baseURL: import.meta.env.BASE_URL
+    baseURL: import.meta.env.VITE_API_URL
 })
 
 api.interceptors.response.use(response => {

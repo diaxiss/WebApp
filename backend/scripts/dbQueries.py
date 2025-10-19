@@ -67,7 +67,7 @@ def get_all_illustrators() -> list:
     JOIN card_sets
     ON card.set_id = card_sets.id
     WHERE tcgpocket = 0 AND card.illustrator <> "" AND card.illustrator IS NOT NULL
-    ORDER BY card.illustrator ASC
+    ORDER BY LOWER(card.illustrator) ASC
     '''
 
     result = [field[0] for field in cur.execute(query).fetchall()]

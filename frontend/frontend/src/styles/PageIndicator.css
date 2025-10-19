@@ -3,6 +3,7 @@
     width: 100%;
     gap: 5px;
     margin: auto;
+    margin-top: 30px;
     justify-content: center;
 }
 
@@ -10,7 +11,7 @@
     width: fit-content;
     padding: 0.6em 1.2em;
     min-width: 30px;
-    background-color: #1a1a1a;
+    background-color: #101010;
     border: 1px solid #00000000;
     border-radius: 8px;
     text-align: center;

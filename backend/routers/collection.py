@@ -32,8 +32,7 @@ async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
         sub = jwt_decoded.get('sub')
         result = get_user_collection(sub)
         cards = result['cards']
-        numOfCards = result['numOfCards']
-        return {'cards': cards, 'numOfCards': numOfCards}
+        return {'cards': cards}
     return HTTPException
 
 
@@ -44,8 +43,7 @@ async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
         sub = jwt_decoded.get('sub')
         result = get_user_collection(sub, limit=10)
         cards = result['cards']
-        numOfCards = result['numOfCards']
-        return {'cards': cards, 'numOfCards': numOfCards}
+        return {'cards': cards}
     return HTTPException
 
 

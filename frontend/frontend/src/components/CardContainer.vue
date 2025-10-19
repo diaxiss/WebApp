@@ -3,7 +3,7 @@ import '../styles/CardContainer.css'
 
 import { imageFallback } from '../utilities/misc';
 import type { Card } from '../utilities/interfaces';
-import { accessToken, collection, wishlist } from '../utilities/constants';
+import { accessToken, API_URL, collection, wishlist } from '../utilities/constants';
 import FullscreenImage from './FullscreenImage.vue';
 import { useWishlist } from '../composables/useWishlist';
 import { useCollection } from '../composables/useCollection';
@@ -31,7 +31,7 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 
     <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
-      <img class='card-image' loading="lazy" :src="`http://localhost:8000/images/${result.card_id}.png`"
+      <img class='card-image' loading="lazy" :src="`${API_URL}/images/${result.card_id}.png`"
         :alt="`${result.name} - ${result.card_id}`" 
         @click="openImage(result.card_id)"
         @error="imageFallback"/>

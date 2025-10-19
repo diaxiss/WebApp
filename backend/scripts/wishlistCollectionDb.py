@@ -77,15 +77,12 @@ def get_user_collection(sub: str, limit: int = -1):
     WHERE google_id = ?
     ORDER BY card_sets.release_date
     '''
-    cards = cur.execute('SELECT card_id, count, card.name, card.image '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
+    cards = cur.execute('SELECT card_id, count, card.name '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
 
     for i, item in enumerate(cards):
-        cards[i] = {'card_id': item[0], 'count': item[1], 'name': item[2], 'image': item[3]}
-    
-    totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
-    total_cards = cur.execute(totalCardQuery, [sub]).fetchone()[0]
+        cards[i] = {'card_id': item[0], 'count': item[1], 'name': item[2]}
 
-    return {'cards': cards, 'numOfCards': total_cards}
+    return {'cards': cards}
 
 
 def get_user_wishlist(sub: str, limit: int = -1):
@@ -101,12 +98,9 @@ def get_user_wishlist(sub: str, limit: int = -1):
     WHERE google_id = ?
     ORDER BY card_sets.release_date
     '''
-    cards = cur.execute('SELECT card_id, card.name, card.image '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
+    cards = cur.execute('SELECT card_id, card.name '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
 
     for i, item in enumerate(cards):
-        cards[i] = {'card_id': item[0], 'name': item[1], 'image': item[2]}
-    
-    totalCardQuery = 'SELECT COUNT(*) ' + baseQuery
-    total_cards = cur.execute(totalCardQuery, [sub]).fetchone()[0]
+        cards[i] = {'card_id': item[0], 'name': item[1]}
 
-    return {'cards': cards, 'numOfCards': total_cards}
+    return {'cards': cards}

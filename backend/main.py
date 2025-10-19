@@ -32,6 +32,7 @@ app.mount('/set_symbol', StaticFiles(directory='./data/set_symbol'), name = 'set
 origins = [
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",
+    "http://192.168.5.16:5173"
 ]
 
 # CORS setup
@@ -40,7 +41,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 #---------------

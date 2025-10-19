@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 import placeholder_image from '../assets/placeholderCard.webp'
+import { API_URL } from "../utilities/constants";
 
 const fullscreenImage = ref<string | null>(null);
 const imageWrapper = ref<HTMLElement | null>(null)
@@ -13,7 +14,7 @@ export function useFullscreenImage(){
     // Fullscreen card
     //----------------------
     async function openImage(image: string){
-        const url = `http://localhost:8000/images/${image}.png`
+        const url = `${API_URL}/images/${image}.png`
         // Try to load the image
         const img = new Image()
         img.src = url

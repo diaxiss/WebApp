@@ -29,8 +29,7 @@ async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
         sub = jwt_decoded.get('sub')
         result = get_user_wishlist(sub)
         cards = result['cards']
-        numOfCards = result['numOfCards']
-        return {'cards': cards, 'numOfCards': numOfCards}
+        return {'cards': cards}
     return HTTPException
 
 
@@ -41,8 +40,7 @@ async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
         sub = jwt_decoded.get('sub')
         result = get_user_wishlist(sub, limit=10)
         cards = result['cards']
-        numOfCards = result['numOfCards']
-        return {'cards': cards, 'numOfCards': numOfCards}
+        return {'cards': cards}
     return HTTPException
 
 

@@ -8,6 +8,7 @@ import CardContainer from '../components/CardContainer.vue';
 
 import { useCardSearch } from '../composables/useCardSearch';
 import { useSets } from '../composables/useSets';
+import { API_URL } from '../utilities/constants';
 
 const {fetchSet} = useSets()
 const {loadedCards} = useCardSearch()
@@ -27,7 +28,7 @@ onMounted(() => {
 <template>
     <PageHeader/>
     <img v-if="imageExists" 
-        :src="`http://localhost:8000/set_logo/${set_id}.png`"
+        :src="`${API_URL}/set_logo/${set_id}.png`"
         style="max-width: 400px; max-height: 200px;"
         @error="imageExists = false"
     />
