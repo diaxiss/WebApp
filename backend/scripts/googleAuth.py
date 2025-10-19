@@ -4,7 +4,7 @@ import jwt
 import datetime
 from scripts.userDbQueries import check_user_in_db
 from fastapi import HTTPException, status
-from scripts.env import GOOGLE_CLIENT_ID, SECRET_KEY, ALGORITHM
+from env import GOOGLE_CLIENT_ID, SECRET_KEY, ALGORITHM
 
 def decode_token(token: str):
     try:
