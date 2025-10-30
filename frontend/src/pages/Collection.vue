@@ -6,12 +6,15 @@ import CardContainer from '../components/CardContainer.vue';
 import PageHeader from '../components/PageHeader.vue';
 
 import { useCollection } from '../composables/useCollection';
+import { loading } from '../utilities/constants';
 
 //Composables
 const {collection, fetch: fetchCollection } = useCollection()
 
 onMounted(async() => {
-    fetchCollection()
+    loading.value = true
+    await fetchCollection()
+    loading.value = false
 })
 
 </script>

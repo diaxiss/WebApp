@@ -8,7 +8,7 @@ import CardContainer from '../components/CardContainer.vue';
 
 import { useCardSearch } from '../composables/useCardSearch';
 import { useSets } from '../composables/useSets';
-import { API_URL } from '../utilities/constants';
+import { API_URL, loading } from '../utilities/constants';
 
 const {fetchSet} = useSets()
 const {loadedCards} = useCardSearch()
@@ -18,8 +18,10 @@ const set_id: string = route.params.id as string
 
 const imageExists = ref(true)
 
-onMounted(() => {
-    fetchSet(set_id)
+onMounted(async() => {
+    loading.value = true
+    await fetchSet(set_id)
+    loading.value = false
 })
 
 

@@ -6,7 +6,7 @@ import CardContainer from '../components/CardContainer.vue';
 
 import type { Card } from '../utilities/interfaces';
 
-import { accessToken } from '../utilities/constants';
+import { accessToken, loading } from '../utilities/constants';
 import { userName } from '../utilities/constants';
 
 import placeholder_image from '../assets/placeholder.png'
@@ -65,8 +65,10 @@ onMounted(async() => {
     catch(err){
         console.error(err)
     }
+    loading.value = true
     fetchCollection()
     fetchWishlist()
+    loading.value = false
 })
 </script>
 

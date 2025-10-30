@@ -28,7 +28,7 @@ class Cookies(BaseModel):
 #----------------------------------------
 
 @router.post('/auth-google')
-async def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
+def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
     user, email, picture, access_token, refresh_token = handle_google_authentification(request.credential)
     
     response.set_cookie(
@@ -42,7 +42,7 @@ async def handle_authentification_request(request: AuthRequest, response: Respon
 
 
 @router.get('/user')
-async def fetch_user_info(token: str = Depends(oauth2_scheme)):
+def fetch_user_info(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -52,13 +52,13 @@ async def fetch_user_info(token: str = Depends(oauth2_scheme)):
 
 
 @router.post('/logout')
-async def handle_logout(response: Response):
+def handle_logout(response: Response):
     response.delete_cookie(key="refresh_token")
     return {'msg': 'Logged out'}
 
 
 @router.post('/refresh-token')
-async def refresh_access_token(cookies: Annotated[Cookies, Cookie()]):
+def refresh_access_token(cookies: Annotated[Cookies, Cookie()]):
     
     refresh_token=cookies.refresh_token
     decoded_refresh_token = decode_token(refresh_token)

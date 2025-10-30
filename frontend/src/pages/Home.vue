@@ -9,11 +9,14 @@ import PageIndicator from '../components/PageIndicator.vue';
 import CardContainer from '../components/CardContainer.vue';
 
 import { useCardSearch } from '../composables/useCardSearch';
+import { loading } from '../utilities/constants';
 
 const { loadedCards, fetchAll } = useCardSearch()
 
 onMounted(async () => {
-    fetchAll()
+    loading.value = true
+    await fetchAll()
+    loading.value = false
 })
 
 </script>

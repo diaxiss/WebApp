@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import '../styles/CardContainer.css'
 
+
+import FullscreenImage from './FullscreenImage.vue';
+
 import { imageFallback } from '../utilities/misc';
 import type { Card } from '../utilities/interfaces';
-import { accessToken, API_URL, collection, wishlist } from '../utilities/constants';
-import FullscreenImage from './FullscreenImage.vue';
+import { accessToken, API_URL, collection, loading, wishlist } from '../utilities/constants';
+
 import { useWishlist } from '../composables/useWishlist';
 import { useCollection } from '../composables/useCollection';
 import { useFullscreenImage } from '../composables/useFullscreenImage';
+
+import loading_gif from '../assets/loading.gif'
 
 const { openImage } = useFullscreenImage()
 
@@ -27,14 +32,15 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 
   <FullscreenImage/>
 
-  <div class="query-container">
+  <div class="query-container"
+        v-if="!loading">
 
     <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
       <img class='card-image'
         loading="lazy"
         :src="`${API_URL}/images/${result.card_id}.png`"
-        :alt="`${result.name} - ${result.card_id}`" 
+        :alt="`${result.name} - ${result.card_id}`"
         @click="openImage(result.card_id)"
         @error="imageFallback"/>
 
@@ -60,17 +66,15 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
           </button>
         </div>
 
-        <span>{{ result.count ||
-        collection[collection.findIndex(card =>{
-          return card.card_id === result.card_id
-        })]?.count }}</span>
-
         <div class="collection-buttons">
           <button 
             @click="collectionAdd(result)">
             <span>+</span>
           </button>
-
+          <span>{{ result.count ||
+          collection[collection.findIndex(card =>{
+            return card.card_id === result.card_id
+          })]?.count }}</span>
           <button 
             v-if="collection.find(card => card.card_id === result.card_id)"
             @click="collectionRemove(result)">
@@ -80,6 +84,10 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 
       </div>
     </div>
+  </div>
+
+  <div v-else style="width: 100%; display: flex; justify-content: center;">
+      <img :src="loading_gif" style="height: 100px; width: 100px"/>
   </div>
 
 

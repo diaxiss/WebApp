@@ -26,7 +26,7 @@ class CollectionRequest(BaseModel):
 # Routes
 #--------------------------
 @router.get('/collection')
-async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
+def fetch_user_collection(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -37,7 +37,7 @@ async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
 
 
 @router.get('/collection/summary')
-async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
+def fetch_user_collection(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -48,7 +48,7 @@ async def fetch_user_collection(token: str = Depends(oauth2_scheme)):
 
 
 @router.post('/collection')
-async def add_to_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
+def add_to_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -58,7 +58,7 @@ async def add_to_collection(request: CollectionRequest, token: str = Depends(oau
 
 
 @router.delete('/collection')
-async def remove_from_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
+def remove_from_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')

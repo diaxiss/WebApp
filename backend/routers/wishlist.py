@@ -23,7 +23,7 @@ class WishlistRequest(BaseModel):
 # Routes
 #--------------------------
 @router.get('/wishlist')
-async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
+def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -34,7 +34,7 @@ async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
 
 
 @router.get('/wishlist/summary')
-async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
+def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -45,7 +45,7 @@ async def fetch_user_wishlist(token: str = Depends(oauth2_scheme)):
 
 
 @router.post('/wishlist')
-async def add_to_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
+def add_to_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
@@ -55,7 +55,7 @@ async def add_to_wishlist(request: WishlistRequest, token: str = Depends(oauth2_
 
 
 @router.delete('/wishlist')
-async def remove_from_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
+def remove_from_wishlist(request: WishlistRequest, token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')

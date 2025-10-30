@@ -4,11 +4,14 @@ import PageHeader from '../components/PageHeader.vue';
 import CardContainer from '../components/CardContainer.vue';
 
 import { useWishlist } from '../composables/useWishlist';
+import { loading } from '../utilities/constants';
 
 const { wishlist, fetch: fetchWishlist } = useWishlist()
 
 onMounted(async() => {
-    fetchWishlist()
+    loading.value = true
+    await fetchWishlist()
+    loading.value = false
 })
 </script>
 
