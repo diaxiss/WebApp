@@ -4,6 +4,7 @@ __pycache__
 env.py
 node_modules/
 backend/data/images/*.png
+backend/data/images/images.zip
 backend/data/user_images/*.png
 backend/data/set_logo/*.png
 backend/data/set_symbol/*.png

@@ -57,10 +57,10 @@ export function useFullscreenImage(){
             const centerX = rect.width / 2
             const centerY = rect.height / 2
 
-            const rotateX = ((y- centerY) / centerY) * -10
-            const rotateY = ((x- centerX) / centerX) * 10
+            const rotateX = ((y- centerY) / centerY) * -5
+            const rotateY = ((x- centerX) / centerX) * 5
 
-        imageWrapper.value!.style.transition = `transform 0.1s ease-out`
+        imageWrapper.value!.style.transition = `transform 0.2s ease-out`
         imageWrapper.value!.style.transform = `
             perspective(800px)
             rotateX(${rotateX}deg)
