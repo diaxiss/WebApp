@@ -33,7 +33,10 @@ onMounted(async() => {
             :key="card_set.id"
             class="set-item" 
             @click="router.push(`/sets/${card_set.id}`)">
-            <img :src="`${API_URL}/set_logo/${card_set.id}.png`" style="max-width: 100px; max-height: 100px;"/>
+            <img
+                :src="`${API_URL}/set_logo/${card_set.id}.png`"
+                style="max-width: 100px; max-height: 100px;"
+                loading="lazy"/>
             <!-- <p>{{card_set.name}}</p> -->
             <p>{{card_set.release_date}}</p>
         </div>
