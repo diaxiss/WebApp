@@ -37,13 +37,15 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
 
     <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
-      <img class='card-image'
-        loading="lazy"
-        :src="`${API_URL}/images/${result.card_id}.png`"
-        :alt="`${result.name} - ${result.card_id}`"
-        @click="openImage(result.card_id)"
-        @error="imageFallback"/>
-
+      <div class="image-div">
+        <img class='card-image'
+          loading="lazy"
+          :src="`${API_URL}/images/${result.card_id}.png`"
+          :alt="`${result.name} - ${result.card_id}`"
+          @click="openImage(result.card_id)"
+          @error="imageFallback"/>
+          <p class="image-overlay-text">{{result.name}}</p>
+      </div>
       <div v-if="displayInfo">
         <p @click="$router.push(`/sets/${result.card_set_id}`)">{{ result.card_set }}</p>
         <p>{{ result.release_date }}</p>

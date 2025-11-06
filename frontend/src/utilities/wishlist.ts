@@ -3,10 +3,10 @@ import { accessToken } from "./constants"
 import type { Card } from "./interfaces"
 
 // Wishlist fetching
-export const fetchWishlist = async() => {
+export const fetchWishlist = async(user_id?: string) => {
 
     try{
-        const res = await api.get('/wishlist', {
+        const res = await api.get(`/wishlist/${user_id || ''}`, {
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
@@ -18,6 +18,23 @@ export const fetchWishlist = async() => {
     catch(err){
         console.error("Couldn't fetch wishlist")
         return {wishlist: [], numOfWishlist: 0}
+    }
+}
+
+
+
+export const fetchWishlistSummary = async(user_id: string) => {
+
+    try{
+        const res = await api.get(`/wishlist/summary/${user_id || ''}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
+        return res.data.cards
+    }
+    catch(err){
+        console.error(err)
     }
 }
 

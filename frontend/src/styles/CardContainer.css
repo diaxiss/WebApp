@@ -4,6 +4,10 @@
     justify-content: center;
     gap: 1rem;
 }
+.image-div{
+    position: relative;
+}
+
 .card-image{
     aspect-ratio: 0.7159;
     height: 100%;
@@ -11,6 +15,19 @@
     cursor: zoom-in;
     object-fit: fill;
     object-position: center;
+}
+
+.image-overlay-text{
+    position: absolute;
+    text-align: center;
+    background-color: #000000CC;
+    bottom: 10%;
+    width: 100%;
+    z-index: 4;
+}
+
+.image-overlay-text > p{
+    padding: 10px;
 }
 
 .query-item-container{

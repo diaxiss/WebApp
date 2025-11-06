@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import { useWishlist } from './composables/useWishlist';
 import { useCollection } from './composables/useCollection';
 import { onMounted } from 'vue';
 
 const {fetch: fetchWishlist} = useWishlist()
 const {fetch: fetchCollection} = useCollection()
+
+const route = useRoute()
 
 onMounted(async() => {
   if (localStorage.getItem('accessToken')){
@@ -17,5 +19,5 @@ onMounted(async() => {
 </script>
 
 <template>
-  <RouterView/>
+  <RouterView :key="route.fullPath"/>
 </template>

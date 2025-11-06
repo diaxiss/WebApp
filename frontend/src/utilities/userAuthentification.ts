@@ -1,6 +1,6 @@
 import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
-import { userPicture, userName, accessToken, collection, wishlist, isLoggedOut } from "./constants"
+import { userPicture, userName, accessToken, collection, wishlist, isLoggedOut, userId } from "./constants"
 import { fetchCollection } from "./collection"
 import { fetchWishlist } from "./wishlist"
 import { router } from "../main"
@@ -39,8 +39,10 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
                                     {credential: response.credential},
                                     {withCredentials: true})
         userName.value = res.data.user.name
+        userId.value = res.data.user.id
         userPicture.value = res.data.user.picture
         localStorage.setItem('user', userName.value || '')
+        localStorage.setItem('id', userId.value || '')
         localStorage.setItem('image', userPicture.value || '')
         setToken(res.data.access_token)
         
@@ -48,7 +50,6 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
         collection.value = collectionRes.collection
         const wishlistRes = await fetchWishlist()
         wishlist.value = wishlistRes.wishlist
-        
         return 'Success'
     }
     catch (err){

@@ -2,14 +2,14 @@ import sqlite3
 import requests
 
 
-def get_user_info(sub: str):
+def get_user_info(sub: str, self:bool = True):
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
-    query = '''
+    query = f'''
     SELECT name, email, picture
     FROM user
-    WHERE google_id = ?
+    WHERE google_id = ? {'' if self else 'AND public=1'}
     '''
 
     result = cur.execute(query, [sub]).fetchall()[0]
@@ -46,3 +46,22 @@ def check_user_in_db(user: dict) -> None:
         con.commit()
     result = cur.execute(query, [user['sub']]).fetchall()
     return result[0][0]
+
+def fetch_all_users():
+    con = sqlite3.connect('./data/cards.db')
+    cur = con.cursor()
+
+    query = '''
+    SELECT name, picture 
+    FROM user
+    WHERE public=1
+    '''
+
+    result = cur.execute(query).fetchall()
+
+    for i, item in enumerate(result):
+        result[i] = {'name': item[0], 'picture': item[1]}
+
+    return {'users': result}
+
+        

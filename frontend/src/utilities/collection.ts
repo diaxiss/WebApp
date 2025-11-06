@@ -3,10 +3,10 @@ import { accessToken } from "./constants"
 import type { Card } from "./interfaces"
 
 // Collection fetching
-export const fetchCollection = async() => {
+export const fetchCollection = async(user_id?: string) => {
 
     try{
-        const res = await api.get('/collection', {
+        const res = await api.get(`/collection/${user_id || ''}`, {
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
@@ -22,6 +22,21 @@ export const fetchCollection = async() => {
     }
 }
 
+export const fetchCollectionSummary = async(user_id: string) => {
+
+    try{
+        const res = await api.get(`/collection/summary/${user_id || ''}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
+        console.log(res.data)
+        return res.data.cards
+    }
+    catch(err){
+        console.error(err)
+    }
+}
 
 // Collection adding
 export const addToCollection = async(card: Card, count: number = 1) => {

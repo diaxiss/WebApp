@@ -64,12 +64,14 @@ def handle_google_authentification(credential):
         'sub': idInfo['sub'],
         'email': idInfo['email'], 
         'name': idInfo['name'],
-        'picture': idInfo['picture']
     }
 
-    check_user_in_db(user)
+    user_id = check_user_in_db(user)
+
+    user['id'] = user_id
     access_token = create_access_token(user)
     refresh_token = create_refresh_token(user)
+    user['picture'] = idInfo['sub']
 
-    return [user['name'], user['email'], user['sub'], access_token, refresh_token]
+    return [user['name'], user['picture'], user['id'], access_token, refresh_token]
     

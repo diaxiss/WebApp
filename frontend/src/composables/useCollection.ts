@@ -58,8 +58,8 @@ export function useCollection() {
         })
     }
 
-    const fetch = async() => {
-        const res = await fetchCollection()
+    const fetch = async(user_id?: string) => {
+        const res = await fetchCollection(user_id)
         collection.value = res.collection
         return res.collection
     }

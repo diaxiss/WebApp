@@ -4,7 +4,7 @@ import sqlite3
 # Wishlist
 #-----------------------------
 
-def get_user_wishlist(sub: str, limit: int = -1):
+def get_user_wishlist(sub: str, self:bool = True, limit: int = -1):
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
@@ -14,7 +14,8 @@ def get_user_wishlist(sub: str, limit: int = -1):
     ON wishlist.card_id = card.id
     JOIN card_sets
     ON card.set_id = card_sets.id 
-    WHERE google_id = ?
+    JOIN user on wishlist.google_id = user.google_id
+    WHERE wishlist.google_id = ? {'' if self else 'AND user.public=1'}
     ORDER BY card_sets.release_date
     '''
     cards = cur.execute('SELECT card_id, card.name '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()
@@ -60,17 +61,19 @@ def remove_card_from_wishlist(card_id: str, sub: str) -> None:
 # Collection
 #-----------------------------
 
-def get_user_collection(sub: str, limit: int = -1):
+def get_user_collection(sub: str, self:bool = True, limit: int = -1):
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
     baseQuery = f'''
-    FROM collection
+    FROM collection AS col
     JOIN card
-    ON collection.card_id = card.id
+    ON col.card_id = card.id
     JOIN card_sets
     ON card.set_id = card_sets.id 
-    WHERE google_id = ?
+    JOIN user
+    ON col.google_id = user.google_id
+    WHERE col.google_id = ? {'' if self else 'AND user.public=1'}
     ORDER BY card_sets.release_date
     '''
     cards = cur.execute('SELECT card_id, count, card.name '+baseQuery+' LIMIT ?', [sub, limit]).fetchall()

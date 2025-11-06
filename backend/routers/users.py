@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer
 
 from scripts.googleAuth import handle_google_authentification, decode_token, create_access_token
-from scripts.userDbQueries import get_user_info
+from scripts.userDbQueries import get_user_info, fetch_all_users
 router = APIRouter()
 
 # authentification scheme
@@ -29,7 +29,7 @@ class Cookies(BaseModel):
 
 @router.post('/auth-google')
 def handle_authentification_request(request: AuthRequest, response: Response) -> dict:
-    user, email, picture, access_token, refresh_token = handle_google_authentification(request.credential)
+    user, picture, user_id, access_token, refresh_token = handle_google_authentification(request.credential)
     
     response.set_cookie(
         key="refresh_token",
@@ -38,7 +38,7 @@ def handle_authentification_request(request: AuthRequest, response: Response) ->
         secure=True,
         samesite="none"
     )
-    return {'user': {'name': user, 'picture': picture, 'email': email}, 'access_token': access_token}
+    return {'user': {'name': user, 'picture': picture, 'id': user_id}, 'access_token': access_token}
 
 
 @router.get('/user')
@@ -49,6 +49,16 @@ def fetch_user_info(token: str = Depends(oauth2_scheme)):
         result = get_user_info(sub)
         return result
     return HTTPException
+
+@router.get('/user/{user_id}')
+def fetch_user_info(user_id: str):
+    result = get_user_info(user_id, self=False)
+    return result
+
+@router.get('/users')
+def fetch_users():
+    result = fetch_all_users()
+    return result
 
 
 @router.post('/logout')

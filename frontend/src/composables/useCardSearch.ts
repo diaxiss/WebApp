@@ -19,6 +19,7 @@ export function useCardSearch() {
 
         if (Object.keys(payload).length <= 2 && isQueried.value){
             console.log('Not enough form data')
+            fetchCards()
             return false
         }
         return true

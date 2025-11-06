@@ -10,11 +10,13 @@ import { imageFallback } from '../utilities/misc';
 
 import { userName, userPicture } from '../utilities/constants';
 import { accessToken } from '../utilities/constants';
+import { useRoute } from "vue-router";
 
 
 const onLoginError = async (response: CredentialResponse) => {
     console.log('Error: ', response)
 }
+const route = useRoute()
 
 </script>
 
@@ -23,9 +25,10 @@ const onLoginError = async (response: CredentialResponse) => {
     <div class="header">
         <nav class="nav-bar">
             <router-link to="/">Home</router-link>
+            <router-link to="/users">Users</router-link>
             <router-link to="/sets">Sets</router-link>
-            <router-link to="/wishlist" v-if="userName">Wishlist</router-link>
-            <router-link to="/collection" v-if="userName">Collection</router-link>
+            <router-link to="/wishlist" v-if="userName" :key="route.fullPath">Wishlist</router-link>
+            <router-link to="/collection" v-if="userName" :key="route.fullPath">Collection</router-link>
         </nav>
         <div class="sign-in-buttons">
             <GoogleSignInButton
@@ -44,7 +47,7 @@ const onLoginError = async (response: CredentialResponse) => {
                 >
                 Log Out
             </button>
-            <router-link to="/profile" v-if="userName">
+            <router-link to="/profile" v-if="userName" :key="route.fullPath">
                 <img class="profile-picture" :src="`${userPicture}`"
                 @error="imageFallback"/>
             </router-link>

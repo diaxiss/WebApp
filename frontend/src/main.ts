@@ -10,13 +10,18 @@ import SetDetails from './pages/SetDetails.vue'
 import Profile from './pages/Profile.vue'
 import Collection from './pages/Collection.vue'
 import Wishlist from './pages/Wishlist.vue'
+import User from './pages/User.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home},
-  { path: '/profile', component: Profile, meta: { requiresAuth: true}},
+  { path: '/profile', component: Profile, meta: { requiresAuth: true }},
+  { path: '/profile/:id', component: Profile},
+  { path: '/users', component: User},
   { path: '/sets', component: Sets },
   { path: '/collection', component: Collection, meta: { requiresAuth: true} },
+  { path: '/collection/:id', component: Collection },
   { path: '/wishlist', component: Wishlist, meta: { requiresAuth: true} },
+  { path: '/wishlist/:id', component: Wishlist},
   { path: '/sets/:id', component: SetDetails}
 ]
 

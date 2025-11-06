@@ -62,3 +62,18 @@ def remove_from_wishlist(request: WishlistRequest, token: str = Depends(oauth2_s
         remove_card_from_wishlist(request.card_id, sub)
         return
     return HTTPException
+
+#-------------------------------
+# User queries
+#-------------------------------
+@router.get('/wishlist/{id}')
+def fetch_user_wishlist_id(id: str):
+    result = get_user_wishlist(id, self=False)
+    cards = result['cards']
+    return {'cards': cards}
+    
+@router.get('/wishlist/summary/{id}')
+def fetch_user_wishlist(id: str):
+    result = get_user_wishlist(id, self=False, limit=10)
+    cards = result['cards']
+    return {'cards': cards}

@@ -29,3 +29,8 @@ export interface SetCard{
     card_count_official: string,
     card_count_total: string
 }
+
+export interface User{
+    name: string,
+    picture: string
+}

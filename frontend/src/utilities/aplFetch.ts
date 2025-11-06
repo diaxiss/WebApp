@@ -1,5 +1,7 @@
 import api from "../api"
-import { payload } from "./constants"
+import { router } from "../main"
+import { accessToken, payload } from "./constants"
+import type { User } from "./interfaces"
 import { refreshToken } from "./userAuthentification"
 
 //--------------------------------
@@ -94,3 +96,30 @@ export const queryCards = async() => {
     }
 }
 
+export const fetchAllUsers = async() => {
+    try{
+        const res = await api.get('/users')
+        console.log(res.data)
+        return res.data.users as User[]
+    }catch(err){
+        console.error(err)
+        return []
+    }
+}
+
+export const fetchUser = async(user_id: string) => {
+    try{
+        const res = await api.get(`/user/${user_id || ''}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
+        console.log(res.data)
+        const picture = `http://localhost:8000/user_images/${res.data.picture}`
+        return {'picture': picture, 'profile_user_name': res.data.name}
+    }
+    catch(err){
+        router.push('/')
+        console.error(err)
+    }
+}

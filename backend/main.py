@@ -33,6 +33,7 @@ origins = [
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",
     "http://192.168.5.16:5173",
+    "http://192.168.18.46:5173",
     "https://frontend-0ev7.onrender.com"
 ]
 

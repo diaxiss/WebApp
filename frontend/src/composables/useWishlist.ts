@@ -28,8 +28,8 @@ export function useWishlist(){
         wishlist.value.some(c => c.card_id === card.card_id)
     }
 
-    const fetch = async() => {
-        const res = await fetchWishlist()
+    const fetch = async(user_id?: string) => {
+        const res = await fetchWishlist(user_id)
         wishlist.value = res.wishlist
         return res.wishlist
     }

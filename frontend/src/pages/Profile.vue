@@ -6,68 +6,37 @@ import CardContainer from '../components/CardContainer.vue';
 
 import type { Card } from '../utilities/interfaces';
 
-import { accessToken, loading } from '../utilities/constants';
+import { loading } from '../utilities/constants';
 import { userName } from '../utilities/constants';
 
 import placeholder_image from '../assets/placeholder.png'
-import api from '../api';
+import { useRoute } from 'vue-router';
+import { fetchUser } from '../utilities/aplFetch';
+import { fetchCollectionSummary } from '../utilities/collection';
+import { fetchWishlistSummary } from '../utilities/wishlist';
 
 const collection = ref<Card[]>([])
-const numOfCollection = ref<number>(0)
 const wishlist = ref<Card[]>([])
-const numOfWishlist = ref<number>(0)
 const picture = ref<string | null>()
+const profile_user_name = ref<string | null> (userName.value)
 
-const fetchCollection = async() => {
+const route = useRoute()
+const user_id: string = route.params.id as string
 
-    try{
-        const res = await api.get('/collection/summary', {
-            headers: {
-                Authorization: `Bearer ${accessToken.value}`
-            }
-        })
-        collection.value = res.data.cards
-        numOfCollection.value = res.data.numOfCards
-        console.log(res.data)
-    }
-    catch(err){
-        console.error(err)
-    }
-}
 
-const fetchWishlist = async() => {
-
-    try{
-        const res = await api.get('/wishlist/summary', {
-            headers: {
-                Authorization: `Bearer ${accessToken.value}`
-            }
-        })
-        wishlist.value = res.data.cards
-        numOfWishlist.value = res.data.numOfCards
-        console.log(res.data)
-    }
-    catch(err){
-        console.error(err)
-    }
-}
 
 onMounted(async() => {
-    try{
-        const res = await api.get('/user', {
-            headers: {
-                Authorization: `Bearer ${accessToken.value}`
-            }
-        })
-        picture.value = `http://localhost:8000/user_images/${res.data.picture}`
-        console.log(res.data)
-    }
-    catch(err){
-        console.error(err)
-    }
+
+
     loading.value = true
-    fetchCollection()
-    fetchWishlist()
+
+    fetchUser(user_id).then((res) => {
+        picture.value = res?.picture
+        profile_user_name.value = res?.profile_user_name
+    })
+
+    collection.value = await fetchCollectionSummary(user_id)
+    wishlist.value = await fetchWishlistSummary(user_id)
     loading.value = false
 })
 </script>
@@ -75,7 +44,7 @@ onMounted(async() => {
 <template>
         <PageHeader/>
         <img v-if="picture" :src="picture || placeholder_image" style="height: 100px; width: 100px; border-radius: 50px;"/>
-        <h1> {{ userName }} </h1>
+        <h1> {{ profile_user_name }} </h1>
         <h2>Collection</h2>
         <div>
             <div v-if="collection.length!==0">
@@ -83,13 +52,13 @@ onMounted(async() => {
                     :cards="collection"
                     :display-info="false"
                     :extra-options="false"/>
-                <router-link v-if="numOfCollection > 10" to='/collection'>
-                    <button>And more!</button>
+                <router-link :to="`/collection/${user_id || ''}`">
+                    <button>View whole collection</button>
                 </router-link>
             </div>
             <div v-else>
-                <p>Your collection is empty</p>
-                <router-link to="/">Search for more cards</router-link>
+                <p>{{user_id ? 'This' : 'Your'}} collection is empty</p>
+                <router-link v-if="!user_id" to="/">Search for more cards</router-link>
             </div>
         </div>
         <h2>Wishlist</h2>
@@ -99,11 +68,11 @@ onMounted(async() => {
                     :cards="wishlist"
                     :display-info="false"
                     :extra-options="false"/>
-                <router-link v-if="numOfWishlist > 10" to="/wishlist">
-                    <button>And more!</button>
+                <router-link :to="`/wishlist/${user_id || ''}`">
+                    <button>View whole wishlist</button>
                 </router-link>
             </div>
-            <p v-else>You have no items on your wishlist</p>
+            <p v-else>{{ user_id ? 'There are' : 'You have'}} no items on {{ user_id ? 'this': 'your'}} wishlist</p>
         </div>
 
 </template>

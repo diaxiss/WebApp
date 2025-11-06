@@ -65,3 +65,19 @@ def remove_from_collection(request: CollectionRequest, token: str = Depends(oaut
         remove_card_from_collection(request.card_id, request.count, sub)
         return
     return HTTPException
+
+
+#-------------------------------
+# User queries
+#-------------------------------
+@router.get('/collection/{id}')
+def fetch_user_wishlist_id(id: str, self = False):
+    result = get_user_collection(id)
+    cards = result['cards']
+    return {'cards': cards}
+    
+@router.get('/collection/summary/{id}')
+def fetch_user_wishlist(id: str):
+    result = get_user_collection(id, self=False, limit=10)
+    cards = result['cards']
+    return {'cards': cards}
