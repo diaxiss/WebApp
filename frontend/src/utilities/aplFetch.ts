@@ -1,6 +1,6 @@
 import api from "../api"
 import { router } from "../main"
-import { accessToken, isLoggedOut } from "./constants"
+import { accessToken } from "./constants"
 import type { SearchPayload, User } from "./interfaces"
 
 //--------------------------------

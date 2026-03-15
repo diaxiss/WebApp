@@ -13,7 +13,7 @@ import { useCollection } from '../composables/useCollection';
 import { useFullscreenImage } from '../composables/useFullscreenImage';
 
 import loading_gif from '../assets/loading.gif'
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const { openImage } = useFullscreenImage()
 

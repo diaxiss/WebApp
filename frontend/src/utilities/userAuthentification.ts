@@ -1,6 +1,6 @@
 import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
-import { userPicture, userName, accessToken, isLoggedOut, userId } from "./constants"
+import { userPicture, userName, accessToken, userId } from "./constants"
 import { router } from "../main"
 
 function setToken(token: string){

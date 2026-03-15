@@ -9,8 +9,8 @@ export function useCollection(collection: Ref<Card[]>) {
 
         card.count ? card.count += 1 : card.count = 1
 
-        const res = await addToCollection(card)
-        const res2 = await removeFromWishlist(card)
+        await addToCollection(card)
+        await removeFromWishlist(card)
 
         
     }
@@ -19,9 +19,7 @@ export function useCollection(collection: Ref<Card[]>) {
 
         card.count ? card.count -= 1 : card.count = 0
 
-        const res = await removeFromCollection(card)
-        if (res?.msg === 'Success') return
-        collection.value.splice(index, 0, copy)
+        await removeFromCollection(card)
 
     }
 
