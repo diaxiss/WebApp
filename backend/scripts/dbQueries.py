@@ -140,7 +140,8 @@ def query_card(
     card_set_id: str = None,
     card_id: str = None,
     release_date_from: str = None,
-    release_date_to: str = None
+    release_date_to: str = None,
+    viewer: str | None = None
     ) -> tuple[list, int]:
 
     params = {k: v for k, v in locals().items() if v is not None}
@@ -148,61 +149,100 @@ def query_card(
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
+    print(viewer)
+
     query = '''
-    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date, COUNT(*) OVER() as num_of_pages
+    SELECT card.id,
+        card.name,
+        card.illustrator,
+        card.rarity,
+        card_sets.name,
+        card_sets.id,
+        card_sets.release_date,
+        CASE WHEN wv.card_id IS NOT NULL
+            THEN 1
+            ELSE 0
+        END AS in_wishlist,
+        CASE WHEN col.card_id IS NOT NULL
+            THEN col.count
+            ELSE 0
+        END as count,
+        COUNT(*) OVER() as num_of_pages
     FROM card
     LEFT JOIN card_sets
     ON card.set_id = card_sets.id
-    WHERE tcgpocket = 0 AND 
+    LEFT JOIN wishlist wv
+        ON wv.card_id = card.id
+        AND wv.google_id = ?
+    LEFT JOIN collection col
+        ON col.google_id = ?
+        AND col.card_id = card.id
+    WHERE tcgpocket = 0
     '''
 
     conditions, values = parseConditions(params)
-
-    query += ' AND '.join(conditions)
+    if conditions:
+        query += ' AND ' + ' AND '.join(conditions)
     query += ' ORDER BY card_sets.release_date DESC' 
     query += ' LIMIT ? OFFSET ?'
 
     values.extend([limit, offset])
 
-    result = cur.execute(query, values).fetchall()
+    result = cur.execute(query, [viewer, viewer, *values]).fetchall()
+
+    print(result[1::3])
 
     if len(result) == 0:
         return [], 1
 
     numOfPages = result[0][-1]
 
-    for item in result:
-        item = item[:-1]
-
     con.close()
-    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date']), numOfPages
+    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'in_wishlist', 'count']), numOfPages
 
 
-def get_all_cards(limit: int = 10, offset: int = 0) -> tuple[list, int]:
+def get_all_cards(limit: int = 10, offset: int = 0, viewer: str = None) -> tuple[list, int]:
 
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
     query = '''
-    SELECT card.id, card.name, card.illustrator, card.rarity, card_sets.name, card_sets.id, card_sets.release_date
+    SELECT
+        card.id,
+        card.name,
+        card.illustrator,
+        card.rarity,
+        card_sets.name,
+        card_sets.id,
+        card_sets.release_date,
+        CASE WHEN wv.card_id IS NOT NULL
+            THEN 1
+            ELSE 0
+        END AS in_wishlist,
+        CASE WHEN col.card_id is NOT NULL
+            THEN col.count
+            ELSE 0
+        END AS count,
+        COUNT(*) OVER () as num_of_cards
     FROM card
     LEFT JOIN card_sets
     ON card.set_id = card_sets.id
+    LEFT JOIN wishlist wv
+        ON wv.google_id = ?
+        AND wv.card_id = card.id
+    LEFT JOIN collection col
+        ON col.google_id = ?
+        AND col.card_id = card.id
     WHERE tcgpocket = 0
     ORDER BY release_date DESC, card.id ASC
     LIMIT ?
     OFFSET ?
     '''
-    result = cur.execute(query, (limit, offset)).fetchall()
+    result = cur.execute(query, (viewer, viewer, limit, offset)).fetchall()
 
-    numOfCards = '''
-    SELECT COUNT(*) AS total_cards
-    FROM card
-    LEFT JOIN card_sets
-    ON card.set_id = card_sets.id
-    WHERE card_sets.tcgpocket = 0
-    '''
-    numOfCardsResult = cur.execute(numOfCards).fetchone()[0]
+    print(result)
+
+    numOfCards = result[0][-1]
 
     con.close()
-    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date']), numOfCardsResult
+    return formatQueryResult(result, ['card_id', 'name', 'illustrator', 'rarity', 'card_set', 'card_set_id', 'release_date', 'in_wishlist', 'count']), numOfCards

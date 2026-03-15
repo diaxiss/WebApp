@@ -3,38 +3,25 @@ import { accessToken } from "./constants"
 import type { Card } from "./interfaces"
 
 // Wishlist fetching
-export const fetchWishlist = async(user_id?: string) => {
+export const fetchWishlist = async(limit: number = 10, offset: number = 0, user_id?: string) => {
 
     try{
-        const res = await api.get(`/wishlist/${user_id || ''}`, {
+        const res = await api.get(`/wishlist/${user_id ? 'user/'+user_id : ''}`, {
+            params: {
+                limit: limit,
+                offset: offset
+            },
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
         })
         const wishlist = res.data.cards
-        const numOfWishlist = res.data.numOfCards
-        return {wishlist: wishlist, numOfWishlist: numOfWishlist}
+        const wishlistLength = res.data['length']
+        return [wishlist, wishlistLength]
     }
     catch(err){
         console.error("Couldn't fetch wishlist")
-        return {wishlist: [], numOfWishlist: 0}
-    }
-}
-
-
-
-export const fetchWishlistSummary = async(user_id: string) => {
-
-    try{
-        const res = await api.get(`/wishlist/summary/${user_id || ''}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken.value}`
-            }
-        })
-        return res.data.cards
-    }
-    catch(err){
-        console.error(err)
+        return [[], 0]
     }
 }
 
@@ -60,12 +47,9 @@ export const addToWishlist = async(card: Card) => {
 export const removeFromWishlist = async(card: Card) => {
     const card_id = card.card_id
     try{
-        await api.delete('/wishlist', {
+        await api.delete(`/wishlist/${card_id}`, {
             headers:{
                 Authorization: `Bearer ${accessToken.value}`
-            },
-            data: {
-                card_id: card_id
             }
         })
         return {'msg': 'Success'}

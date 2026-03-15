@@ -1,38 +1,34 @@
-import { wishlist } from "../utilities/constants";
 import { addToWishlist, fetchWishlist, removeFromWishlist } from "../utilities/wishlist";
 
 import type { Card } from "../utilities/interfaces";
+import type { Ref } from "vue";
 
 
-export function useWishlist(){
+export function useWishlist(cards: Ref<Card[]>){
 
     const add = async (card: Card) => {
-        wishlist.value.push(card)
+        
+        card.in_wishlist = true
         const res = await addToWishlist(card)
-        if (res?.msg !== 'Success') wishlist.value.pop()
+        if (res?.msg !== 'Success') card.in_wishlist = false
     };
 
     const remove = async (card: Card) => {
-        const index = wishlist.value.findIndex(c => {
-            return c.card_id === card.card_id
-        })
-        if (index === -1) return;
-        const copy = {...wishlist.value[index]} as Card
-        wishlist.value.splice(index, 1)
+
+        card.in_wishlist = false
 
         const res = await removeFromWishlist(card);
-        if (res?.msg !== 'Success') wishlist.value.splice(index, 0, copy)
+        if (res?.msg !== 'Success') 
+            card.in_wishlist = true
     };
 
     const exists = (card: Card) => {
-        wishlist.value.some(c => c.card_id === card.card_id)
+        return cards.value.some(c => c.card_id === card.card_id)
     }
 
-    const fetch = async(user_id?: string) => {
-        const res = await fetchWishlist(user_id)
-        wishlist.value = res.wishlist
-        return res.wishlist
+    const fetch = async(limit: number = 10, offset: number = 0, user_id?: string) => {
+        return await fetchWishlist(limit, offset, user_id)
     }
 
-    return {wishlist, add, remove, exists, fetch}
+    return {add, remove, exists, fetch}
 }

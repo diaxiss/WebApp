@@ -1,7 +1,7 @@
 <style src="../styles/Home.css"></style>
 <script setup lang='ts'>
 
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import SearchForm from '../components/SearchForm.vue';
 import PageHeader from '../components/PageHeader.vue';
@@ -10,29 +10,56 @@ import CardContainer from '../components/CardContainer.vue';
 
 import { useCardSearch } from '../composables/useCardSearch';
 import { loading } from '../utilities/constants';
+import type { Card } from '../utilities/interfaces';
+import { usePayloadStore } from '../stores/payloadStore';
 
-const { loadedCards, fetchAll } = useCardSearch()
+const { fetchAll } = useCardSearch()
+
+const store = usePayloadStore()
+
+const cards = ref<Card[]>([]);
+const cardsLength = ref<number>(0);
+
+const { fetchQuery } = useCardSearch()
+
+const handleCardSubmit = (new_cards: [Card[], number]) => {
+    [cards.value, cardsLength.value] = new_cards
+}
+
+const handlePageChange = async(page: number) => {
+    [cards.value, cardsLength.value] = await fetchQuery(store.payload, page)
+}
 
 onMounted(async () => {
-    loading.value = true
-    await fetchAll()
+    loading.value = true;
+    [store.payload.limit, store.payload.offset] = [10, 0];
+    [cards.value, cardsLength.value] = await fetchAll({...store.payload})
+    await new Promise(r => setTimeout(r, 1000));
     loading.value = false
+    console.log(cards.value)
 })
-
 </script>
 
 <template>
 
     <PageHeader />
 
-    <SearchForm/>
-    <button @click="fetchAll">All cards</button>
+    <SearchForm @submit="handleCardSubmit"/>
+    <button 
+        @click="{fetchAll(store.payload); store.clearPayload()}">
+            All cards
+    </button>
 
     <CardContainer
-        :cards="loadedCards"
+        :cards="cards"
         :display-info="true"
         :extra-options="true"/>
 
-    <PageIndicator/>
+    <PageIndicator
+        @load-more="handlePageChange"
+        :data="cards"
+        :total_data_size="cardsLength"
+        :limit="store.payload.limit"
+        :offset="store.payload.offset"/>
 
 </template>

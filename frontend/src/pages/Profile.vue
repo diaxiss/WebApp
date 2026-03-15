@@ -12,8 +12,8 @@ import { userName } from '../utilities/constants';
 import placeholder_image from '../assets/placeholder.png'
 import { useRoute } from 'vue-router';
 import { fetchUser } from '../utilities/aplFetch';
-import { fetchCollectionSummary } from '../utilities/collection';
-import { fetchWishlistSummary } from '../utilities/wishlist';
+import { fetchCollection } from '../utilities/collection';
+import { fetchWishlist } from '../utilities/wishlist';
 
 const collection = ref<Card[]>([])
 const wishlist = ref<Card[]>([])
@@ -35,8 +35,8 @@ onMounted(async() => {
         profile_user_name.value = res?.profile_user_name
     })
 
-    collection.value = await fetchCollectionSummary(user_id)
-    wishlist.value = await fetchWishlistSummary(user_id)
+    collection.value = (await fetchCollection(10, 0, user_id))[0]
+    wishlist.value = (await fetchWishlist(10, 0, user_id))[0]
     loading.value = false
 })
 </script>

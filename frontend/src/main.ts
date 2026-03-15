@@ -11,6 +11,7 @@ import Profile from './pages/Profile.vue'
 import Collection from './pages/Collection.vue'
 import Wishlist from './pages/Wishlist.vue'
 import User from './pages/User.vue'
+import { createPinia } from 'pinia'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home},
@@ -41,6 +42,7 @@ router.beforeEach((to, _, next) => {
   }
 })
 
+const pinia = createPinia()
 const app = createApp(App)
 
 app.use(router)
@@ -48,5 +50,7 @@ app.use(router)
 app.use(GoogleSignInPlugin, {
   clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 });
+
+app.use(pinia)
 
 app.mount('#app')

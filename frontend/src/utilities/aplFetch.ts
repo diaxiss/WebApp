@@ -1,8 +1,7 @@
 import api from "../api"
 import { router } from "../main"
-import { accessToken, payload } from "./constants"
-import type { User } from "./interfaces"
-import { refreshToken } from "./userAuthentification"
+import { accessToken, isLoggedOut } from "./constants"
+import type { SearchPayload, User } from "./interfaces"
 
 //--------------------------------
 // Fetch all functions
@@ -36,12 +35,15 @@ export const fetchAllIllustrators = async() => {
 }
 
 // Function to fetch all cards
-export const fetchAllCards = async() => {
+export const fetchAllCards = async(payload: SearchPayload) => {
 
     try{
-        const res = await api.post('/cards', {
+        const res = await api.post('/card', {
                 limit: payload.limit,
-                offset: payload.offset})
+                offset: payload.offset},
+            {headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }})
         return {'cards': res.data.cards, 'numOfCards': res.data.numOfCards}
     }
     catch(err){
@@ -81,13 +83,15 @@ export const fetchAllSetsInfo = async() => {
 //---------------------------
 
 // Function to handle card queries
-export const queryCards = async() => {
+export const queryCards = async(payload: SearchPayload) => {
     try{
-        refreshToken()
-        const res = await api.post('/search', payload)
+        const res = await api.post('/search', payload, {
+            headers:{
+                Authorization: `Bearer ${accessToken.value}`
+            }
+        })
         return {'cards': res.data.data,
-                'numOfCards': res.data.numOfCards,
-                'numOfPages':  Math.ceil(res.data.numOfCards / payload.limit)
+                'numOfCards': res.data.numOfCards
         }
     }
     catch(err){

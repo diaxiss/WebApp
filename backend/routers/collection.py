@@ -13,35 +13,18 @@ router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
 
-
-#------------------------------
-# Models
-#------------------------------
 class CollectionRequest(BaseModel):
     card_id: str
-    count: int
-
 
 #--------------------------
 # Routes
 #--------------------------
 @router.get('/collection')
-def fetch_user_collection(token: str = Depends(oauth2_scheme)):
+def fetch_user_collection(limit: int = 10, offset: int = 0, token: str = Depends(oauth2_scheme)):
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
-        result = get_user_collection(sub)
-        cards = result['cards']
-        return {'cards': cards}
-    return HTTPException
-
-
-@router.get('/collection/summary')
-def fetch_user_collection(token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_token(token)
-    if jwt_decoded:
-        sub = jwt_decoded.get('sub')
-        result = get_user_collection(sub, limit=10)
+        result = get_user_collection(sub=sub, viewer=sub, limit=limit)
         cards = result['cards']
         return {'cards': cards}
     return HTTPException
@@ -52,32 +35,27 @@ def add_to_collection(request: CollectionRequest, token: str = Depends(oauth2_sc
     jwt_decoded = decode_token(token)
     if jwt_decoded:
         sub = jwt_decoded.get('sub')
-        add_card_to_collection(request.card_id, request.count, sub)
+        add_card_to_collection(request.card_id, sub)
         return
     return HTTPException
 
-
-@router.delete('/collection')
-def remove_from_collection(request: CollectionRequest, token: str = Depends(oauth2_scheme)):
-    jwt_decoded = decode_token(token)
-    if jwt_decoded:
-        sub = jwt_decoded.get('sub')
-        remove_card_from_collection(request.card_id, request.count, sub)
-        return
-    return HTTPException
 
 
 #-------------------------------
 # User queries
-#-------------------------------
-@router.get('/collection/{id}')
-def fetch_user_wishlist_id(id: str, self = False):
-    result = get_user_collection(id)
+#------------------------------- 
+
+@router.get('/collection/user{id}')
+def fetch_user_collection_id(id: str, limit: int = 10, offset: int = 0, self = False):
+    result = get_user_collection(user_id)
     cards = result['cards']
     return {'cards': cards}
-    
-@router.get('/collection/summary/{id}')
-def fetch_user_wishlist(id: str):
-    result = get_user_collection(id, self=False, limit=10)
-    cards = result['cards']
-    return {'cards': cards}
+
+@router.delete('/collection/{card_id}')
+def remove_from_collection(card_id: str, token: str = Depends(oauth2_scheme)):
+    jwt_decoded = decode_token(token)
+    if jwt_decoded:
+        sub = jwt_decoded.get('sub')
+        remove_card_from_collection(card_id, sub)
+        return
+    return HTTPException

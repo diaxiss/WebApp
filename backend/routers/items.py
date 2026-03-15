@@ -1,12 +1,19 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from fastapi.security import OAuth2PasswordBearer
+
+from typing import Optional
+
+from scripts.googleAuth import decode_token
 
 from scripts.dbQueries import get_all_rarities, get_all_illustrators
 from scripts.dbQueries import get_all_sets, get_all_sets_info
 from scripts.dbQueries import get_all_cards, query_card
-
+from routers.optional_token import optional_token
 
 router = APIRouter()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google", auto_error=False)
 
 #-----------------------------------
 # Models
@@ -27,6 +34,7 @@ class SearchRequest(BaseModel):
 class CardsRequest(BaseModel):
     limit: int
     offset: int
+
 
 #----------------------------------
 # GET all routes
@@ -52,10 +60,24 @@ def get_illustrators():
     result = get_all_illustrators()
     return {'illustrators': result}
 
-@router.get('/cards')
-def get_cards():
-    result, numOfCards = get_all_cards(limit = 100000)
-    return {'numOfCards': numOfCards, 'cards': result, }
+@router.get('/card')
+def get_cards(token: Optional[str] = Depends(oauth2_scheme)):
+    if token and token != "null":
+        jwt_decoded = decode_token(token)
+        result, numOfCards = get_all_cards(limit= -1, viewer=jwt_decoded.get('sub'))
+    else:
+        result, numOfCards = get_all_cards(limit = -1)
+    return {'numOfCards': numOfCards, 'cards': result}
+
+@router.post('/card')
+def get_all_items_limit(request: CardsRequest, token: Optional[str] = Depends(oauth2_scheme)):
+    if token and token != "null":
+        jwt_decoded = decode_token(token)
+        result, numOfCards = get_all_cards(request.limit, request.offset, viewer=jwt_decoded.get('sub'))
+    else:
+        result, numOfCards = get_all_cards(request.limit, request.offset)
+    
+    return {"cards": result, 'numOfCards': numOfCards}
 
 #----------------------------------------
 # GET with parameters
@@ -68,8 +90,15 @@ def get_item(card_id: str):
 
 
 @router.get('/sets/{set_id}')
-def get_set(set_id: str):
-    result, _ = query_card(card_set_id = set_id, limit = 500, offset = 0)
+def get_set(set_id: str, token: Optional[str] = Depends(oauth2_scheme)):
+
+    viewer = None
+
+    if token and token != "null":
+        jwt_decoded = decode_token(token)
+        viewer = jwt_decoded.get('sub')
+
+    result, _ = query_card(card_set_id = set_id, limit = 500, offset = 0, viewer = viewer)
     return {"cards": result}
 
 
@@ -78,7 +107,15 @@ def get_set(set_id: str):
 #--------------------------------------
 
 @router.post('/search')
-def search(request: SearchRequest):
+def search(request: SearchRequest, token: Optional[str] = Depends(oauth2_scheme)):
+    print(request)
+    print(f'Token: {token}')
+
+    viewer = None
+
+    if token and token != "null":
+        jwt_decoded = decode_token(token)
+        viewer = jwt_decoded.get('sub')
 
     result, numOfCards = query_card(
         name = request.name,
@@ -90,12 +127,8 @@ def search(request: SearchRequest):
         release_date_from = request.release_date_from,
         release_date_to = request.release_date_to,
         limit = request.limit,
-        offset = request.offset
+        offset = request.offset,
+        viewer = viewer
         )
 
     return {"data": result,  'numOfCards': numOfCards} 
-
-@router.post('/cards')
-def get_all_items_limit(request: CardsRequest):
-    result, numOfCards = get_all_cards(request.limit, request.offset)
-    return {"cards": result, 'numOfCards': numOfCards}

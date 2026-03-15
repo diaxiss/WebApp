@@ -3,53 +3,39 @@ import { accessToken } from "./constants"
 import type { Card } from "./interfaces"
 
 // Collection fetching
-export const fetchCollection = async(user_id?: string) => {
+export const fetchCollection = async(limit: number = 10, offset: number = 0, user_id?: string) => {
 
     try{
-        const res = await api.get(`/collection/${user_id || ''}`, {
+        const res = await api.get(`/collection/${user_id ? '/user'+user_id : ''}`, {
+            params: {
+                limit: limit,
+                offset: offset
+            },
             headers: {
                 Authorization: `Bearer ${accessToken.value}`
             }
         })
         const collection = res.data.cards
-        const numOfCollection = res.data.numOfCards
+        const collectionLength = res.data.numOfCards
         
-        return {collection: collection, numOfCollection: numOfCollection}
+        return [collection, collectionLength]
     }
     catch(err){
         console.error("Couldn't fetch collection")
-        return {collection: [], numOfCollection: 0}
-    }
-}
-
-export const fetchCollectionSummary = async(user_id: string) => {
-
-    try{
-        const res = await api.get(`/collection/summary/${user_id || ''}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken.value}`
-            }
-        })
-        console.log(res.data)
-        return res.data.cards
-    }
-    catch(err){
-        console.error(err)
+        return [[], 0]
     }
 }
 
 // Collection adding
-export const addToCollection = async(card: Card, count: number = 1) => {
+export const addToCollection = async(card: Card) => {
     const card_id = card.card_id
     try{
-        await api.post('/collection',{
-            card_id: card_id,
-            count: count
-        }, {headers: {
-            Authorization: `Bearer ${accessToken.value}`
-            
-        }
-        })
+        await api.post(`/collection`,
+            {card_id: card_id},
+            {headers: {
+                Authorization: `Bearer ${accessToken.value}`
+            }}
+        )
         return {'msg': 'Success'}
     }
     catch(err){
@@ -58,16 +44,12 @@ export const addToCollection = async(card: Card, count: number = 1) => {
 }
 
 // Collection removing
-export const removeFromCollection = async(card: Card, count: number = 1) => {
+export const removeFromCollection = async(card: Card) => {
     const card_id = card.card_id
     try{
-        await api.delete('/collection',{
+        await api.delete(`/collection/${card_id}`, {
             headers:{
                 Authorization: `Bearer ${accessToken.value}`
-            },
-            data: {
-                card_id: card_id,
-                count: count
             }
         })
         return {'msg': 'Success'}

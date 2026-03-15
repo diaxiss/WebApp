@@ -20,6 +20,7 @@ export interface Card{
     release_date:string,
     image: string | null,
     count?: number
+    in_wishlist?: boolean
 }
 
 export interface SetCard{

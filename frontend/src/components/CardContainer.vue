@@ -6,13 +6,14 @@ import FullscreenImage from './FullscreenImage.vue';
 
 import { imageFallback } from '../utilities/misc';
 import type { Card } from '../utilities/interfaces';
-import { accessToken, API_URL, collection, loading, wishlist } from '../utilities/constants';
+import { API_URL, isLoggedOut, loading } from '../utilities/constants';
 
 import { useWishlist } from '../composables/useWishlist';
 import { useCollection } from '../composables/useCollection';
 import { useFullscreenImage } from '../composables/useFullscreenImage';
 
 import loading_gif from '../assets/loading.gif'
+import { computed, ref } from 'vue';
 
 const { openImage } = useFullscreenImage()
 
@@ -23,8 +24,9 @@ const props = defineProps<{
 }>()
 
 
-const {add: wishlistAdd, remove: wishlistRemove} = useWishlist()
-const {add: collectionAdd, remove: collectionRemove} = useCollection()
+const {add: wishlistAdd, remove: wishlistRemove} = useWishlist(computed(() => props.cards))
+const {add: collectionAdd, remove: collectionRemove} = useCollection(computed(() => props.cards))
+
 
 </script>
 
@@ -52,11 +54,10 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
       </div>
 
       <!-- Extra options for wishlist/collections -->
-      <div v-if="extraOptions && accessToken" class="extra-options">
-        <div class="wishlist-buttons"
-          v-if="!collection.find(card => card.card_id === result.card_id)">
+      <div v-if="extraOptions && !isLoggedOut" class="extra-options">
+        <div class="wishlist-buttons">
           <button
-            v-if="!wishlist.find(card => card.card_id === result.card_id)"
+            v-if="!result.in_wishlist"
             @click="wishlistAdd(result)">
             <span >♡</span>
           </button>
@@ -69,19 +70,23 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
         </div>
 
         <div class="collection-buttons">
+
+          <button 
+            v-if="true"
+            @click="collectionRemove(result)">
+            <span>-</span>
+          </button>
+
+          <span>{{ result.count ||
+          cards[cards.findIndex(card =>{
+            return (card.card_id === result.card_id)
+          })]?.count || null }}</span>
+          
           <button 
             @click="collectionAdd(result)">
             <span>+</span>
           </button>
-          <span>{{ result.count ||
-          collection[collection.findIndex(card =>{
-            return card.card_id === result.card_id
-          })]?.count }}</span>
-          <button 
-            v-if="collection.find(card => card.card_id === result.card_id)"
-            @click="collectionRemove(result)">
-            <span>-</span>
-          </button>
+          
         </div>
 
       </div>
@@ -89,7 +94,7 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection()
   </div>
 
   <div v-else style="width: 100%; display: flex; justify-content: center;">
-      <img :src="loading_gif" style="height: 100px; width: 100px"/>
+      <img :src="loading_gif" style="height: 20rem; width: 20rem"/>
   </div>
 
 

@@ -64,6 +64,7 @@ def handle_google_authentification(credential):
         'sub': idInfo['sub'],
         'email': idInfo['email'], 
         'name': idInfo['name'],
+        'picture': idInfo['picture']
     }
 
     user_id = check_user_in_db(user)

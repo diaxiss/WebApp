@@ -1,14 +1,18 @@
-import { ref, computed } from "vue";
+import { ref, computed, type Ref } from "vue";
 
-import { useCardSearch } from "./useCardSearch";
+export function usePagination(
+    total_data_size: Ref<number>,
+    limit: Ref<number>,
+){
 
-import { currentPage, numOfPages } from "../utilities/constants";
-
-const {loadMore} = useCardSearch()
-
-export function usePagination(){
-
+    const currentPage = ref<number>(1)
     const jumpPage = ref<number>(1)
+
+    currentPage.value = 1
+
+    const numOfPages = computed(() => {
+        return Math.ceil(total_data_size.value/limit.value)
+    })
 
     const pagesToShow = computed(() => {
 
@@ -35,11 +39,5 @@ export function usePagination(){
         return pages
     })
 
-    const handlePageJump = () => {
-        if (jumpPage.value > numOfPages.value || jumpPage.value < 1) return
-        console.log(jumpPage.value)
-        loadMore(jumpPage.value)
-    }
-
-    return { jumpPage, pagesToShow, handlePageJump}
+    return { currentPage, jumpPage, numOfPages, pagesToShow }
 }
