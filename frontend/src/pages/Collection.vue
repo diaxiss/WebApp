@@ -28,7 +28,7 @@ const handleChangeLimit = async() => {
 }
 
 const handlePageChange = async(page: number) => {
-    [collection.value, collectionLength.value] = await fetchCollection(store.payload.limit, store.payload.limit * (page-1))
+    [collection.value, collectionLength.value] = await fetchCollection(store.payload.limit, store.payload.limit * (page-1), user_id)
 }
 
 onMounted(async() => {

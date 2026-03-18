@@ -6,7 +6,7 @@ import type { Card } from "./interfaces"
 export const fetchCollection = async(limit: number = 10, offset: number = 0, user_id?: string) => {
 
     try{
-        const res = await api.get(`/collection/${user_id ? '/user'+user_id : ''}`, {
+        const res = await api.get(`/collection/${user_id ? 'user/'+user_id : ''}`, {
             params: {
                 limit: limit,
                 offset: offset
@@ -16,7 +16,7 @@ export const fetchCollection = async(limit: number = 10, offset: number = 0, use
             }
         })
         const collection = res.data.cards
-        const collectionLength = res.data.numOfCards
+        const collectionLength = res.data.length
         
         return [collection, collectionLength]
     }

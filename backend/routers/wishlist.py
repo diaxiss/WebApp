@@ -2,6 +2,8 @@ from fastapi import Depends, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
+from typing import Optional
+
 from scripts.googleAuth import decode_token
 from scripts.userDbQueries import get_user_info
 from scripts.wishlistCollectionDb import add_card_to_wishlist, add_card_to_collection
@@ -11,7 +13,7 @@ from scripts.wishlistCollectionDb import wishlist_stats
 router = APIRouter()
 
 # authentification scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google", auto_error=False)
 
 class WishlistRequest(BaseModel):
     card_id: str
@@ -64,11 +66,10 @@ def wishlist_percentage(token: str = Depends(oauth2_scheme)):
 
 
 @router.get('/wishlist/user/{id}')
-def fetch_user_wishlist_id(id: str, limit: int = 10, offset: int = 0, token: str = Depends(oauth2_scheme)):
-    if token:
+def fetch_user_wishlist_id(id: str, limit: int = 10, offset: int = 0, token: Optional[str] = Depends(oauth2_scheme)):
+    if token and token != "null":
         result = get_user_wishlist(sub=id, self=False, limit=limit, offset=offset, viewer = decode_token(token).get('sub'))
     else:
         result = get_user_wishlist(sub=id, self=False, limit=limit, offset=offset, viewer = None)
-    cards = result['cards']
-    return {'cards': cards}
+    return {'cards': result["cards"], 'length': result["length"]}
     

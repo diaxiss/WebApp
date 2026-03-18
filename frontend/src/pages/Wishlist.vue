@@ -26,7 +26,7 @@ const handleChange = async() => {
 }
 
 const handleLoadMore = async(page: number) => {
-    [wishlist.value, wishlistLength.value] = await fetchWishlist(store.payload.limit, store.payload.limit*(page-1))
+    [wishlist.value, wishlistLength.value] = await fetchWishlist(store.payload.limit, store.payload.limit*(page-1), user_id)
 }
 
 onMounted(async() => {
