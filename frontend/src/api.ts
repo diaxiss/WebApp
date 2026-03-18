@@ -2,7 +2,6 @@ import axios, { Axios } from "axios";
 import { handleLogout, refreshToken } from "./utilities/userAuthentification";
 import { accessToken, isLoggedOut } from "./utilities/constants";
 
-console.log(import.meta.env.VITE_API_URL)
 const api: Axios = axios.create({
     // baseURL: import.meta.env.BASE_URL
     baseURL: import.meta.env.VITE_API_URL

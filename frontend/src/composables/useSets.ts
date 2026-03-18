@@ -13,7 +13,6 @@ export function useSets(){
             }
         })
         loadedCards.value = res.data.cards
-        console.log(loadedCards.value)
     }
     return {fetchSet}
 }

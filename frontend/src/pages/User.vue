@@ -13,9 +13,7 @@ const router = useRouter()
 
 onMounted(async() => {
     loading.value = true
-    users.value = await fetchAllUsers()
-    console.log(users.value)
-    
+    users.value = await fetchAllUsers()    
     loading.value = false
 })
 </script>

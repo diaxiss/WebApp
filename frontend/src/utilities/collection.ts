@@ -39,7 +39,7 @@ export const addToCollection = async(card: Card) => {
         return {'msg': 'Success'}
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to add the card to your collection')
     }
 }
 
@@ -55,6 +55,6 @@ export const removeFromCollection = async(card: Card) => {
         return {'msg': 'Success'}
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to remove the card from your collection')
     }
 }

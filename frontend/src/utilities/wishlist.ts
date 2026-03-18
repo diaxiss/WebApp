@@ -39,7 +39,7 @@ export const addToWishlist = async(card: Card) => {
         return {'msg': 'Success'}
     }
     catch(err){
-        console.error(err)
+        console.error('Failed adding the card to your wishlist')
     }
 }
 
@@ -55,6 +55,6 @@ export const removeFromWishlist = async(card: Card) => {
         return {'msg': 'Success'}
     }
     catch(err){
-        console.error(err)
+        console.error('Failed removing the card from your wishlist')
     }
 }

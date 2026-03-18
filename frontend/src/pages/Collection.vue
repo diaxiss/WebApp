@@ -36,7 +36,6 @@ onMounted(async() => {
     [store.payload.limit, store.payload.offset] = [25,0];
     [collection.value, collectionLength.value] = await fetchCollection(store.payload.limit, store.payload.offset, user_id)
     loading.value = false
-    console.log(collection.value)
 })
 
 </script>

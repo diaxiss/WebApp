@@ -34,9 +34,7 @@ onMounted(async () => {
     loading.value = true;
     [store.payload.limit, store.payload.offset] = [10, 0];
     [cards.value, cardsLength.value] = await fetchAll({...store.payload})
-    await new Promise(r => setTimeout(r, 1000));
     loading.value = false
-    console.log(cards.value)
 })
 </script>
 

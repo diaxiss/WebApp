@@ -34,7 +34,6 @@ onMounted(async() => {
     [store.payload.limit, store.payload.offset] = [25,0];
     [wishlist.value, wishlistLength.value] = await fetchWishlist(store.payload.limit, store.payload.offset, user_id)
     loading.value = false
-    console.log(wishlist.value)
 })
 
 </script>

@@ -16,7 +16,7 @@ export const fetchAllRarities = async() => {
                 return res.data.rarities
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to fetch card rarity categories')
         return null
     }
 }
@@ -29,7 +29,7 @@ export const fetchAllIllustrators = async() => {
         return res.data.illustrators
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to fetch card illustrators')
         return null
     }
 }
@@ -47,7 +47,7 @@ export const fetchAllCards = async(payload: SearchPayload) => {
         return {'cards': res.data.cards, 'numOfCards': res.data.numOfCards}
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to fetch cards')
         return null
     }
 }
@@ -59,7 +59,7 @@ export async function fetchAllSets(){
         return res.data.sets
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to fetch all sets')
         return null
     }
 }
@@ -72,7 +72,7 @@ export const fetchAllSetsInfo = async() => {
         return res.data.sets
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to fetch info about sets')
         return null
     }
 }
@@ -95,7 +95,7 @@ export const queryCards = async(payload: SearchPayload) => {
         }
     }
     catch(err){
-        console.error(err)
+        console.error('Failed to query for cards')
         return null
     }
 }
@@ -103,10 +103,9 @@ export const queryCards = async(payload: SearchPayload) => {
 export const fetchAllUsers = async() => {
     try{
         const res = await api.get('/users')
-        console.log(res.data)
         return res.data.users as User[]
     }catch(err){
-        console.error(err)
+        console.error('Failed to fetch all users')
         return []
     }
 }
@@ -118,12 +117,11 @@ export const fetchUser = async(user_id: string) => {
                 Authorization: `Bearer ${accessToken.value}`
             }
         })
-        console.log(res.data)
         const picture = `http://localhost:8000/user_images/${res.data.picture}`
         return {'picture': picture, 'profile_user_name': res.data.name}
     }
     catch(err){
         router.push('/')
-        console.error(err)
+        console.error('Failed to fetch current user')
     }
 }
