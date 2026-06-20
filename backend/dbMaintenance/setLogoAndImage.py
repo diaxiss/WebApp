@@ -1,11 +1,12 @@
-from tcgdexsdk import TCGdex, Query
-from tcgdexsdk.enums import Extension, Quality
+import os
 import sqlite3
 import requests
 import asyncio
 from tcgdexsdk.models.Card import Card
 from tcgdexsdk.models.Set import Set
 from tcgdexsdk.models.SetResume import SetResume
+from tcgdexsdk import TCGdex, Query
+from tcgdexsdk.enums import Extension, Quality
 
 tcgdex = TCGdex()
 
@@ -21,6 +22,8 @@ async def save_image(path: str, content: bytes):
 
 
 async def fetch_logo(set_item):
+    if os.path.exists(f'../data/set_logo/{set_item.id}.png'):
+        return
     logo = set_item.get_logo(Extension.PNG)
     if logo is not None:
         content = await asyncio.to_thread(logo.read)
@@ -28,6 +31,8 @@ async def fetch_logo(set_item):
 
 
 async def fetch_symbol(set_item):
+    if os.path.exists(f'../data/set_symbol/{set_item.id}.png'):
+        return
     symbol = set_item.get_symbol(Extension.PNG)
     if symbol is not None:
         content = await asyncio.to_thread(symbol.read)

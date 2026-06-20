@@ -47,21 +47,13 @@ const handlePageJump = () => {
             <button :disabled="currentPage === 1" @click="handleSelect(currentPage-1)">&lt;</button>
             
 
-            <div v-for="page in pagesToShow" 
-                :class="['page-indicator', 
-                        page === currentPage ? 'disabled' : 'enabled']"
+            <button v-for="page in pagesToShow"
+                :disabled="page === currentPage || page === '...'"
                 @click="(page !== currentPage && page !== '...') ? handleSelect(page as number): null">
-
-                <a
-                    v-if="page !== '...'" 
-                    :key = page
-                > 
                 {{ page }}
-                </a>
 
-                <span v-else>...</span>
 
-            </div>
+            </button>
 
             <!-- Next page -->
             <button :disabled="currentPage === numOfPages" @click="handleSelect(currentPage+1)">&gt;</button>

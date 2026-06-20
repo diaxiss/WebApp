@@ -5,9 +5,8 @@ import '../styles/FullscreenImage.css'
 import { useFullscreenImage } from '../composables/useFullscreenImage';
 
 const { closeImage, 
-    fullscreenImage, imageWrapper, 
-    handleMouseEnter, handleMouseMove, 
-    resetTransform} = useFullscreenImage()
+    fullscreenImage, imageWrapper,
+    handleMouseMove, resetTransform} = useFullscreenImage()
 
 </script>
 
@@ -19,7 +18,6 @@ const { closeImage,
 
     <div
       class="image-wrapper"
-      @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
       @mouseleave="resetTransform">
 

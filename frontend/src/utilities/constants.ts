@@ -18,4 +18,4 @@ export const isLoggedOut = computed(() => {
 
 export const userName = ref<string | null>(localStorage.getItem('user'))
 export const userId = ref<string | null>(localStorage.getItem('sub'))
-export const userPicture = ref<string | null>(`http://localhost:8000/user_images/${localStorage.getItem('image')}.png`)
+export const userPicture = ref<string | null>(localStorage.getItem('image'))

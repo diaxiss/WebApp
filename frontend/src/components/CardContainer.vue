@@ -1,8 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import '../styles/CardContainer.css'
-
-
-import FullscreenImage from './FullscreenImage.vue';
 
 import { imageFallback } from '../utilities/misc';
 import type { Card } from '../utilities/interfaces';
@@ -12,8 +10,10 @@ import { useWishlist } from '../composables/useWishlist';
 import { useCollection } from '../composables/useCollection';
 import { useFullscreenImage } from '../composables/useFullscreenImage';
 
-import loading_gif from '../assets/loading.gif'
-import { computed } from 'vue';
+import FullscreenImage from './FullscreenImage.vue';
+
+import Loading from './Loading.vue';
+
 
 const { openImage } = useFullscreenImage()
 
@@ -34,8 +34,10 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection(computed(()
 
   <FullscreenImage/>
 
+  <Loading v-if="loading"/>
+
   <div class="query-container"
-        v-if="!loading">
+        v-else>
 
     <div class="query-item-container" v-for="result in props.cards" :key="result.card_id">
 
@@ -94,10 +96,5 @@ const {add: collectionAdd, remove: collectionRemove} = useCollection(computed(()
       </div>
     </div>
   </div>
-
-  <div v-else style="width: 100%; display: flex; justify-content: center;">
-      <img :src="loading_gif" style="height: 20rem; width: 20rem"/>
-  </div>
-
 
 </template>

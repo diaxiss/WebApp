@@ -5,5 +5,5 @@ const route = useRoute()
 </script>
 
 <template>
-  <RouterView :key="route.fullPath"/>
+    <RouterView :key="route.fullPath"/>
 </template>

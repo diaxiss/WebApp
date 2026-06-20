@@ -2,12 +2,12 @@ from fastapi import Depends, APIRouter, HTTPException
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer
 
+from typing import Optional
+
 from scripts.userDbQueries import get_user_info
 from scripts.wishlistCollectionDb import remove_card_from_collection
 from scripts.wishlistCollectionDb import add_card_to_collection, get_user_collection
 from scripts.googleAuth import decode_token
-
-
 
 router = APIRouter()
 
@@ -45,11 +45,15 @@ def add_to_collection(request: CollectionRequest, token: str = Depends(oauth2_sc
 # User queries
 #------------------------------- 
 
-@router.get('/collection/user{id}')
-def fetch_user_collection_id(id: str, limit: int = 10, offset: int = 0, self = False):
-    result = get_user_collection(user_id)
+@router.get('/collection/user/{id}')
+def fetch_user_collection_id(id: str, limit: int = 10, offset: int = 0, token: Optional[str] = Depends(oauth2_scheme)):
+    if token and token != "null":
+        result = get_user_collection(sub=id, self=False, limit=limit, offset=offset, viewer=decode_token(token).get('sub'))
+    else:
+        result = get_user_collection(sub=id, self=False, limit=limit, offset=offset, viewer=None)
     cards = result['cards']
     return {'cards': cards}
+
 
 @router.delete('/collection/{card_id}')
 def remove_from_collection(card_id: str, token: str = Depends(oauth2_scheme)):

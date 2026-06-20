@@ -1,15 +1,25 @@
 .query-container{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    display:flex;
+    width: fit-content;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
 }
+.query-item-container{
+    max-width: min(calc(50vw - 1rem), 180px);
+    min-width: 5rem;
+}
 .image-div{
+    height: 100%;
+    width: 100%;
     position: relative;
+    aspect-ratio: 0.7159;
 }
 
 .card-image{
-    aspect-ratio: 0.7159;
     height: 100%;
     width: 100%;
     cursor: zoom-in;
@@ -28,18 +38,6 @@
 
 .image-overlay-text > p{
     padding: 10px;
-}
-
-.query-item-container{
-    aspect-ratio: 0.7159;
-    max-width: 200px;
-    width: 100%;
-}
-
-.query-item-container > div > p{
-    cursor:pointer;
-    padding: 0;
-    margin: 0;
 }
 
 .extra-options{

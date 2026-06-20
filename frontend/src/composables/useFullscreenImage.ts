@@ -14,6 +14,9 @@ export function useFullscreenImage(){
     // Fullscreen card
     //----------------------
     async function openImage(image: string){
+
+        document.body.style.overflow = "hidden";
+
         const url = `${API_URL}/images/${image}.png`
         // Try to load the image
         const img = new Image()
@@ -30,17 +33,8 @@ export function useFullscreenImage(){
     }
 
     function closeImage(){
+        document.body.style.overflow = "scroll";
         fullscreenImage.value = null
-    }
-
-    function handleMouseEnter() {
-    if (!imageWrapper.value) return
-
-    void imageWrapper.value.offsetWidth;
-
-    // Temporary small transition on hover start
-    imageWrapper.value.style.transition = 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)'
-    imageWrapper.value.style.transform = 'perspective(800px) scale(1.05)'
     }
 
     function handleMouseMove(e: MouseEvent){
@@ -51,16 +45,14 @@ export function useFullscreenImage(){
 
         animationFrame = requestAnimationFrame(() => {
             const rect = imageWrapper.value!.getBoundingClientRect()
-            const x = e.clientX - rect.left
-            const y = e.clientY - rect.top
 
-            const centerX = rect.width / 2
-            const centerY = rect.height / 2
+            const x = ((e.clientX - rect.left)/rect.width) - 0.5
+            const y = ((e.clientY - rect.top)/rect.height) - 0.5
 
-            const rotateX = ((y- centerY) / centerY) * -5
-            const rotateY = ((x- centerX) / centerX) * 5
+            const rotateX = y * -10
+            const rotateY = x * 10
 
-        imageWrapper.value!.style.transition = `transform 0.2s ease-out`
+        imageWrapper.value!.style.transition = `transform 0.3s ease-out`
         imageWrapper.value!.style.transform = `
             perspective(800px)
             rotateX(${rotateX}deg)
@@ -73,7 +65,7 @@ export function useFullscreenImage(){
     function resetTransform(){
 
         if(!imageWrapper.value) return
-        imageWrapper.value.style.transition = `transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)`;
+        imageWrapper.value.style.transition = `transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)`;
         imageWrapper.value.style.transform = `
             perspective(800px)
             rotateX(0deg)
@@ -84,18 +76,18 @@ export function useFullscreenImage(){
 
     // Close on Esc key
     onMounted(() => {
-    window.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeImage()
-        })  
-    })
-    onUnmounted(() => {
-    closeImage()
-    window.removeEventListener('keydown', e => {
-        if (e.key === 'Escape') closeImage()
+        window.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeImage()
+            })  
         })
+    onUnmounted(() => {
+        closeImage()
+        window.removeEventListener('keydown', e => {
+            if (e.key === 'Escape') closeImage()
+            })
     })
 
     return {openImage, closeImage,
-        handleMouseEnter, handleMouseMove, resetTransform,
+        handleMouseMove, resetTransform,
         fullscreenImage, imageWrapper}
 }

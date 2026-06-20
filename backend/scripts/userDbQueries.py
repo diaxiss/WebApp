@@ -19,7 +19,6 @@ def get_user_info(sub: str, self:bool = True):
 def add_user_to_db(user: dict, con, cur):
     resultImage = requests.get(user['picture'])
     user['picture'] = f'{user["sub"]}.png'
-    print(resultImage)
     with open(f'./data/user_images/{user["sub"]}.png', 'wb') as image:
         image.write(resultImage.content)
     query = '''

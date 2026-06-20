@@ -14,6 +14,7 @@ import { useRoute } from 'vue-router';
 import { fetchUser } from '../utilities/aplFetch';
 import { fetchCollection } from '../utilities/collection';
 import { fetchWishlist } from '../utilities/wishlist';
+import Loading from '../components/Loading.vue';
 
 const collection = ref<Card[]>([])
 const wishlist = ref<Card[]>([])
@@ -26,7 +27,6 @@ const user_id: string = route.params.id as string
 
 
 onMounted(async() => {
-
 
     loading.value = true
 
@@ -42,7 +42,11 @@ onMounted(async() => {
 </script>
 
 <template>
-        <PageHeader/>
+    <PageHeader/>
+
+    <Loading v-if="loading"/>
+
+    <div v-else>
         <img v-if="picture" :src="picture || placeholder_image" style="height: 100px; width: 100px; border-radius: 50px;"/>
         <h1> {{ profile_user_name }} </h1>
         <h2>Collection</h2>
@@ -74,5 +78,5 @@ onMounted(async() => {
             </div>
             <p v-else>{{ user_id ? 'There are' : 'You have'}} no items on {{ user_id ? 'this': 'your'}} wishlist</p>
         </div>
-
+    </div>
 </template>

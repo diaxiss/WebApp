@@ -25,6 +25,7 @@ export const usePayloadStore = defineStore('payload', () => {
         payload.card_id = null
         payload.release_date_from = null
         payload.release_date_to = null
+        payload.offset = 0
 
     }
 

@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 # Local packages
 #-------------------------
 from routers import users, wishlist, collection, items
+from env import LOCAL_IP, DEPLOY_URL
 
 #---------------------
 # App setup
@@ -28,10 +29,12 @@ app.mount('/images', StaticFiles(directory='./data/images'), name = 'images')
 app.mount('/user_images', StaticFiles(directory='./data/user_images'), name = 'user_images')
 app.mount('/set_logo', StaticFiles(directory='./data/set_logo'), name = 'set_logo')
 app.mount('/set_symbol', StaticFiles(directory='./data/set_symbol'), name = 'set_symbol')
+
 # Allow requests from frontend
 origins = [
-    "http://localhost:5173",  # Vite dev server
-    "https://frontend-0ev7.onrender.com"
+    LOCAL_IP, 
+    "http://localhost:5173",
+    DEPLOY_URL
 ]
 
 # CORS setup

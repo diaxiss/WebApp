@@ -12,6 +12,7 @@ import { loading } from '../utilities/constants';
 import { useRoute } from 'vue-router';
 import type { Card } from '../utilities/interfaces';
 import { usePayloadStore } from '../stores/payloadStore';
+import Loading from '../components/Loading.vue';
 
 const collection = ref<Card[]>([])
 const collectionLength = ref<number>(0)
@@ -24,11 +25,13 @@ const route = useRoute()
 const user_id: string = route.params.id as string
 
 const handleChangeLimit = async() => {
-    [collection.value, collectionLength.value] = await fetchCollection(store.payload.limit, store.payload.offset, user_id)
+    [collection.value, collectionLength.value] = 
+        await fetchCollection(store.payload.limit, store.payload.offset, user_id)
 }
 
 const handlePageChange = async(page: number) => {
-    [collection.value, collectionLength.value] = await fetchCollection(store.payload.limit, store.payload.limit * (page-1))
+    [collection.value, collectionLength.value] = 
+        await fetchCollection(store.payload.limit, store.payload.limit * (page-1), user_id)
 }
 
 onMounted(async() => {
@@ -43,22 +46,27 @@ onMounted(async() => {
 <template>
 
     <PageHeader/>
-    <h1>Collection</h1>
-    <LimitSelect
-        @change="handleChangeLimit"
-    />
-    <CardContainer
-        v-if="collection.length!==0"
-        :cards="collection"
-        :display-info="false"
-        :extra-options="user_id ? false : true"/>
+
+    <Loading v-if="loading"/>
+
     <div v-else>
-        <p>{{ user_id ? 'This' : 'Your'}} collection is empty</p>
+        <h1>Collection</h1>
+        <LimitSelect
+            @change="handleChangeLimit"
+        />
+        <CardContainer
+            v-if="collection.length!==0"
+            :cards="collection"
+            :display-info="false"
+            :extra-options="user_id ? false : true"/>
+        <div v-else>
+            <p>{{ user_id ? 'This' : 'Your'}} collection is empty</p>
+        </div>
+        <PageIndicator
+            @load-more="handlePageChange"
+            :data="collection"
+            :total_data_size="collectionLength"
+            :limit="store.payload.limit"
+            :offset="store.payload.offset"/>
     </div>
-    <PageIndicator
-        @load-more="handlePageChange"
-        :data="collection"
-        :total_data_size="collectionLength"
-        :limit="store.payload.limit"
-        :offset="store.payload.offset"/>
 </template>

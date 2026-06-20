@@ -23,11 +23,11 @@ const store = usePayloadStore()
 
 const changeLimit = async(limit: number) => {
     store.payload.limit = limit
-    emits('submit', await fetchQuery({...store.payload}) as [Card[], number])
+    emits('submit', await fetchQuery() as [Card[], number])
 }
 
 const handleSubmit = async() => {
-    emits('submit', await fetchQuery({...store.payload}) as [Card[], number])
+    emits('submit', await fetchQuery() as [Card[], number])
 }
 
 </script>

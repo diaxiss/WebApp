@@ -1,6 +1,6 @@
 import api from "../api"
 import { router } from "../main"
-import { accessToken } from "./constants"
+import { accessToken, API_URL } from "./constants"
 import type { SearchPayload, User } from "./interfaces"
 
 //--------------------------------
@@ -117,7 +117,7 @@ export const fetchUser = async(user_id: string) => {
                 Authorization: `Bearer ${accessToken.value}`
             }
         })
-        const picture = `http://localhost:8000/user_images/${res.data.picture}`
+        const picture = `${API_URL}/user_images/${res.data.picture}`
         return {'picture': picture, 'profile_user_name': res.data.name}
     }
     catch(err){

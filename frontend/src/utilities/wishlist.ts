@@ -21,6 +21,7 @@ export const fetchWishlist = async(limit: number = 10, offset: number = 0, user_
     }
     catch(err){
         console.error("Couldn't fetch wishlist")
+        console.log(err)
         return [[], 0]
     }
 }

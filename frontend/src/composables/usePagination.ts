@@ -5,8 +5,8 @@ export function usePagination(
     limit: Ref<number>,
 ){
 
-    const currentPage = ref<number>(1)
-    const jumpPage = ref<number>(1)
+    const currentPage = ref(1)
+    const jumpPage = ref(1)
 
     currentPage.value = 1
 

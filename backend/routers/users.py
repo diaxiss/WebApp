@@ -36,7 +36,7 @@ def handle_authentification_request(request: AuthRequest, response: Response) ->
         value=refresh_token,
         httponly=True,
         secure=True,
-        samesite="none"
+        samesite="strict",
     )
     return {'user': {'name': user, 'picture': picture, 'id': user_id}, 'access_token': access_token}
 
@@ -74,6 +74,5 @@ def refresh_access_token(cookies: Annotated[Cookies, Cookie()]):
     decoded_refresh_token = decode_token(refresh_token)
 
     if decoded_refresh_token:
-        del decoded_refresh_token['exp']
         newAccessToken = create_access_token(decoded_refresh_token)
         return {'access_token': newAccessToken}

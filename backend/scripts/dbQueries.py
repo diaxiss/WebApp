@@ -103,12 +103,15 @@ def parseConditions(params) -> tuple[list, list]:
 
         match param:
 
-            case 'name' | 'illustrator' | 'rarity' | 'id':
+            case 'name':
+                conditions.append(f"LOWER(card.name) LIKE LOWER(?)")
+                values.append(f'%{value}%')
+            case 'illustrator' | 'rarity' | 'id':
                 conditions.append(f"LOWER(card.{param}) LIKE LOWER(?)")
                 values.append(f'{value}%')
 
             case 'card_set':
-                conditions.append(f"LOWER(card_sets.name) LIKE LOWER(?)")
+                conditions.append(f"LOWER(card_sets.name) LOWER(?)")
                 values.append(f'{value}%')
             
             case 'card_set_id':
@@ -149,7 +152,6 @@ def query_card(
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
-    print(viewer)
 
     query = '''
     SELECT card.id,
@@ -189,8 +191,6 @@ def query_card(
     values.extend([limit, offset])
 
     result = cur.execute(query, [viewer, viewer, *values]).fetchall()
-
-    print(result[1::3])
 
     if len(result) == 0:
         return [], 1
@@ -239,8 +239,6 @@ def get_all_cards(limit: int = 10, offset: int = 0, viewer: str = None) -> tuple
     OFFSET ?
     '''
     result = cur.execute(query, (viewer, viewer, limit, offset)).fetchall()
-
-    print(result)
 
     numOfCards = result[0][-1]
 

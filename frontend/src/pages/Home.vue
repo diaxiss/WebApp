@@ -27,13 +27,18 @@ const handleCardSubmit = (new_cards: [Card[], number]) => {
 }
 
 const handlePageChange = async(page: number) => {
-    [cards.value, cardsLength.value] = await fetchQuery(store.payload, page)
+    [cards.value, cardsLength.value] = await fetchQuery(page)
+}
+
+const handleFetchAll = async() => {
+    [cards.value, cardsLength.value] = await fetchAll()
+    store.clearPayload()
 }
 
 onMounted(async () => {
     loading.value = true;
     [store.payload.limit, store.payload.offset] = [10, 0];
-    [cards.value, cardsLength.value] = await fetchAll({...store.payload})
+    [cards.value, cardsLength.value] = await fetchAll()
     loading.value = false
 })
 </script>
@@ -44,7 +49,7 @@ onMounted(async () => {
 
     <SearchForm @submit="handleCardSubmit"/>
     <button 
-        @click="{fetchAll(store.payload); store.clearPayload()}">
+        @click="handleFetchAll">
             All cards
     </button>
 

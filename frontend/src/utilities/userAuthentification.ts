@@ -1,6 +1,6 @@
 import type { CredentialResponse } from "vue3-google-signin"
 import api from "../api"
-import { userPicture, userName, accessToken, userId } from "./constants"
+import { userPicture, userName, accessToken, userId, API_URL } from "./constants"
 import { router } from "../main"
 
 function setToken(token: string){
@@ -25,7 +25,6 @@ export const handleLogout = async() => {
     userPicture.value = null
 
     router.push('/')
-
 }
 
 export const googleAuthentificationSuccess = async(response: CredentialResponse) => {
@@ -35,7 +34,7 @@ export const googleAuthentificationSuccess = async(response: CredentialResponse)
                                     {withCredentials: true})
         userName.value = res.data.user.name
         userId.value = res.data.user.id
-        userPicture.value = res.data.user.picture
+        userPicture.value = `${API_URL}/user_images/${res.data.user.picture}.png`
         localStorage.setItem('user', userName.value || '')
         localStorage.setItem('id', userId.value || '')
         localStorage.setItem('image', userPicture.value || '')

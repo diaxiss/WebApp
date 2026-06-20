@@ -9,7 +9,6 @@ from scripts.googleAuth import decode_token
 from scripts.dbQueries import get_all_rarities, get_all_illustrators
 from scripts.dbQueries import get_all_sets, get_all_sets_info
 from scripts.dbQueries import get_all_cards, query_card
-from routers.optional_token import optional_token
 
 router = APIRouter()
 
@@ -20,14 +19,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth-google", auto_error=False)
 #-----------------------------------
 
 class SearchRequest(BaseModel):
-    name: str = None
-    illustrator: str = None
-    rarity: str = None
-    card_set: str = None
-    card_set_id: str = None
-    card_id: str = None
-    release_date_from: str = None
-    release_date_to: str = None
+    name: str | None = None
+    illustrator: str | None = None
+    rarity: str | None = None
+    card_set: str | None = None
+    card_set_id: str | None = None
+    card_id: str | None = None
+    release_date_from: str | None = None
+    release_date_to: str | None = None
     limit: int = 10
     offset: int = 0
     
@@ -108,8 +107,6 @@ def get_set(set_id: str, token: Optional[str] = Depends(oauth2_scheme)):
 
 @router.post('/search')
 def search(request: SearchRequest, token: Optional[str] = Depends(oauth2_scheme)):
-    print(request)
-    print(f'Token: {token}')
 
     viewer = None
 

@@ -12,14 +12,17 @@ def get_user_wishlist(sub: str, viewer: str, self:bool = True, limit: int = -1, 
     SELECT
         w.card_id,
         card.name,
-        CASE WHEN wv.card_id IS NOT NULL
-            THEN 1
-            ELSE 0
-        END AS in_wishlist,
         CASE WHEN col.card_id IS NOT NULL
             THEN col.count
             ELSE 0
         END as count
+        {
+          '' if viewer == None else  
+        ''',CASE WHEN wv.card_id IS NOT NULL
+            THEN 1
+            ELSE 0
+        END AS in_wishlist'''
+        }
     FROM wishlist w
     JOIN card
         ON w.card_id = card.id
@@ -27,9 +30,12 @@ def get_user_wishlist(sub: str, viewer: str, self:bool = True, limit: int = -1, 
         ON card.set_id = card_sets.id 
     JOIN user
         ON w.google_id = user.google_id
-    LEFT JOIN wishlist wv
+    {
+    '' if viewer == None else
+    '''LEFT JOIN wishlist wv
         ON w.card_id = wv.card_id
-        AND wv.google_id = ?
+        AND wv.google_id = ?'''
+    }
     LEFT JOIN collection col
         ON w.card_id = col.card_id
         AND col.google_id = ?
@@ -39,13 +45,12 @@ def get_user_wishlist(sub: str, viewer: str, self:bool = True, limit: int = -1, 
     LIMIT ?
     OFFSET ?
     '''
-    cards = cur.execute(query, [viewer, sub, viewer, limit, offset]).fetchall()
 
-    print(cards[1::3])
+    cards = cur.execute(query, [sub, sub, limit, offset] if viewer == None else [viewer, sub, sub, limit, offset]).fetchall()
 
     for i, item in enumerate(cards):
-        cards[i] = {'card_id': item[0], 'name': item[1], 'in_wishlist': item[2], 'count': item[3]}
-    print(cards[1::3])
+        cards[i] = {'card_id': item[0], 'name': item[1], 'count': item[2], 'in_wishlist': 0 if viewer == None else item[3]}
+
     return {'cards': cards, 
     'length': cur.execute('SELECT COUNT(*) FROM wishlist WHERE google_id = ?', [sub]).fetchone()[0]}
 
@@ -94,11 +99,15 @@ def get_user_collection(sub: str, viewer: str, self:bool = True, limit: int = -1
     SELECT
         col.card_id,
         card.name,
-        count,
-        CASE WHEN wv.card_id IS NOT NULL
+        count
+        {
+        '' if viewer == None else 
+        
+        ''',CASE WHEN wv.card_id IS NOT NULL
             THEN 1
             ELSE 0
-        END AS in_wishlist
+        END AS in_wishlist'''
+        }
     FROM collection AS col
     JOIN card
         ON col.card_id = card.id
@@ -106,19 +115,23 @@ def get_user_collection(sub: str, viewer: str, self:bool = True, limit: int = -1
         ON card.set_id = card_sets.id 
     JOIN user
         ON col.google_id = user.google_id
-    LEFT JOIN wishlist wv
+    {
+    '' if viewer == None else
+    '''LEFT JOIN wishlist wv
         ON col.card_id = wv.card_id
         AND wv.google_id = ?
+    '''
+    }
     WHERE col.google_id = ? 
         {'' if self else 'AND user.public=1'}
     ORDER BY card_sets.release_date
     LIMIT ?
     OFFSET ?
     '''
-    cards = cur.execute(query, [viewer, sub, limit, offset]).fetchall()
+    cards = cur.execute(query, [sub, limit, offset] if viewer == None else [viewer, sub, limit, offset]).fetchall()
 
     for i, item in enumerate(cards):
-        cards[i] = {'card_id': item[0], 'name': item[1], 'count': item[2], 'in_wishlist': item[3]}
+        cards[i] = {'card_id': item[0], 'name': item[1], 'count': item[2], 'in_wishlist': 0 if viewer == None else item[3]}
 
     return {'cards': cards}
 

@@ -7,9 +7,6 @@ from tcgdexsdk.models.Card import Card
 from tcgdexsdk.models.Set import Set
 from tcgdexsdk.models.SetResume import SetResume
 
-import sys
-import time
-
 SET_CONCURRENCY = 25
 set_semaphore = asyncio.Semaphore(SET_CONCURRENCY)
 
@@ -21,9 +18,6 @@ download_semaphore = asyncio.Semaphore(DOWNLOAD_CONCURRENCY)
 
 DB_CONCURRENCY = 1
 db_semaphore = asyncio.Semaphore(DB_CONCURRENCY)
-
-# NUM_OF_LINES = 4
-
 
 tcgdex = TCGdex()
 
@@ -61,7 +55,6 @@ def addCardsToDb(cards: list) -> None:
         '''
 
         params = [card['id'], card['set_id'], card['name'], card['illustrator'], card['rarity']]
-        #print(params)
         cur.execute(query, params)
 
     con.commit()
@@ -74,7 +67,6 @@ def addSetToDb(card_set: Set) -> None:
     cur = con.cursor()
 
     params = [card_set.id, card_set.name, card_set.releaseDate, card_set.cardCount.total, card_set.cardCount.official] 
-    #print(params)
 
     query = '''
     INSERT OR IGNORE INTO card_sets
@@ -88,13 +80,12 @@ def addSetToDb(card_set: Set) -> None:
 
 def downloadImage(card: dict):
 
-
     print(f'Downloading images for {card['id']}',flush=True)
 
     image = card['image']
     if image is None:
         return
-    #print(image)
+
     response = requests.get(image)
     with open(f'../data/images/{card['id']}.png', 'wb') as out:
         out.write(response.content)
@@ -114,6 +105,7 @@ async def get_cards_from_set(set: list):
         cards[card] = cardData
     return cards
 
+
 async def fetch_card(id: str = 'sv06-214'):
     try:
         card = await tcgdex.card.get(id)
@@ -130,7 +122,6 @@ async def fetch_card(id: str = 'sv06-214'):
 
     except:
         return None
-
 
 
 async def fetch_cards_concurr(card_set: Set):
@@ -183,7 +174,6 @@ async def fetch_sets():
     allSets = {}
 
     sets = await tcgdex.set.list()
-
 
     tasks = [asyncio.create_task(process_set(item)) for item in sets]
 

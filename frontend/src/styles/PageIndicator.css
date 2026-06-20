@@ -6,28 +6,3 @@
     margin-top: 30px;
     justify-content: center;
 }
-
-.page-indicator{
-    width: fit-content;
-    padding: 0.6em 1.2em;
-    min-width: 30px;
-    background-color: #101010;
-    border: 1px solid #00000000;
-    border-radius: 8px;
-    text-align: center;
-}
-
-a, a:hover {
-    color: white;
-    text-decoration: none;
-}
-
-.disabled > a{
-    color: gray !important;
-}
-
-.enabled:hover{
-    transition: border 0.25s;
-    border: 1px solid #646cff;
-    cursor:pointer;
-}
