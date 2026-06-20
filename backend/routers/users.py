@@ -36,7 +36,7 @@ def handle_authentification_request(request: AuthRequest, response: Response) ->
         value=refresh_token,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
     )
     return {'user': {'name': user, 'picture': picture, 'id': user_id}, 'access_token': access_token}
 
