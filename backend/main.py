@@ -16,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 #-------------------------
 # Local packages
 #-------------------------
-from routers import users, wishlist, collection, items
+from routers import users, wishlist, collection, items, files
 from env import LOCAL_IP, DEPLOY_URL
 
 #---------------------
@@ -25,10 +25,10 @@ from env import LOCAL_IP, DEPLOY_URL
 app = FastAPI()
 
 #serve images
-app.mount('/images', StaticFiles(directory='./data/images'), name = 'images')
-app.mount('/user_images', StaticFiles(directory='./data/user_images'), name = 'user_images')
-app.mount('/set_logo', StaticFiles(directory='./data/set_logo'), name = 'set_logo')
-app.mount('/set_symbol', StaticFiles(directory='./data/set_symbol'), name = 'set_symbol')
+# app.mount('/images', StaticFiles(directory='./data/images'), name = 'images')
+# app.mount('/user_images', StaticFiles(directory='./data/user_images'), name = 'user_images')
+# app.mount('/set_logo', StaticFiles(directory='./data/set_logo'), name = 'set_logo')
+# app.mount('/set_symbol', StaticFiles(directory='./data/set_symbol'), name = 'set_symbol')
 
 # Allow requests from frontend
 origins = [
@@ -53,4 +53,5 @@ app.include_router(users.router)
 app.include_router(wishlist.router)
 app.include_router(collection.router)
 app.include_router(items.router)
+app.include_router(files.router)
 

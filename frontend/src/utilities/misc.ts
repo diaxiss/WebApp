@@ -1,8 +1,9 @@
 import placeholder_image from '../assets/placeholderCard.webp'
 
 export function imageFallback(event: Event){
-  const target = event.target as HTMLImageElement || null;
+  const target = event.target as HTMLImageElement | null;
   if (target){
+    target.onerror = null
     target.src = placeholder_image
   }
 }
