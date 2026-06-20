@@ -7,6 +7,7 @@ import { useCardSearch } from '../composables/useCardSearch.ts';
 import { useCardMeta } from '../composables/useCardMeta.ts';
 import { usePayloadStore } from '../stores/payloadStore.ts';
 import type { Card } from '../utilities/interfaces.ts';
+import { loading } from '../utilities/constants.ts';
 
 
 
@@ -23,11 +24,16 @@ const store = usePayloadStore()
 
 const changeLimit = async(limit: number) => {
     store.payload.limit = limit
+    loading.value = true
     emits('submit', await fetchQuery() as [Card[], number])
+    loading.value = false
 }
 
 const handleSubmit = async() => {
+    loading.value = true
     emits('submit', await fetchQuery() as [Card[], number])
+    loading.value = false
+
 }
 
 </script>
