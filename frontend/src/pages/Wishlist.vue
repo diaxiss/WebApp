@@ -40,21 +40,25 @@ onMounted(async() => {
 
 <template>
     <PageHeader/>
-    <h1>Wishlist</h1>
-    <LimitSelect @change="handleChange"/>
+    <Loading v-if="loading"/>
 
-    <CardContainer
-        v-if="wishlist.length!==0"
-        :cards="wishlist"
-        :displayInfo="true"
-        :extraOptions="user_id ? false : true"/>
+    <div v-else>
+        <h1>Wishlist</h1>
+        <LimitSelect @change="handleChange"/>
 
-    <p v-else>{{ user_id ? 'There are' : 'You have'}} no items on your wishlist</p>
+        <CardContainer
+            v-if="wishlist.length!==0"
+            :cards="wishlist"
+            :displayInfo="true"
+            :extraOptions="user_id ? false : true"/>
 
-    <PageIndicator
-        @load-more="handleLoadMore"
-        :data="wishlist"
-        :total_data_size="wishlistLength"
-        :limit="store.payload.limit"
-        :offset="store.payload.offset"/>
+        <p v-else>{{ user_id ? 'There are' : 'You have'}} no items on your wishlist</p>
+
+        <PageIndicator
+            @load-more="handleLoadMore"
+            :data="wishlist"
+            :total_data_size="wishlistLength"
+            :limit="store.payload.limit"
+            :offset="store.payload.offset"/>
+    </div>
 </template>
