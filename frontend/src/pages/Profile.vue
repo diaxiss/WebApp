@@ -14,7 +14,6 @@ import { useRoute } from 'vue-router';
 import { fetchUser } from '../utilities/aplFetch';
 import { fetchCollection } from '../utilities/collection';
 import { fetchWishlist } from '../utilities/wishlist';
-import Loading from '../components/Loading.vue';
 
 const collection = ref<Card[]>([])
 const wishlist = ref<Card[]>([])
