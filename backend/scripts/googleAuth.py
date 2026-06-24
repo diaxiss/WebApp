@@ -2,7 +2,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 import jwt
 import datetime
-from scripts.userDbQueries import check_user_in_db
+from scripts.userDbQueries import check_and_add_user_in_db
 from fastapi import HTTPException, status
 from env import GOOGLE_CLIENT_ID, SECRET_KEY, ALGORITHM
 
@@ -24,9 +24,6 @@ def create_access_token(user: dict, expires_minutes: int = 15) -> str:
     expire = now + datetime.timedelta(minutes=expires_minutes)
     to_encode.update({'exp': expire, 'iat': now})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-
 
 
 def create_refresh_token(user: dict, expires_minutes: int = 60*60*24*7):
@@ -66,7 +63,7 @@ def handle_google_authentification(credential):
         'name': idInfo['name'],
     }
 
-    user_id = check_user_in_db(user)
+    user_id = check_and_add_user_in_db(user)
 
     user['id'] = user_id
     access_token = create_access_token(user)

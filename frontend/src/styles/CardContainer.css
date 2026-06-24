@@ -1,12 +1,11 @@
 .query-container{
     display:flex;
-    width: fit-content;
+    width: 100%;
     flex-wrap: wrap;
-    margin-left: auto;
-    margin-right: auto;
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    padding: 0px 10px;
 }
 .query-item-container{
     max-width: min(calc(50vw - 1rem), 180px);

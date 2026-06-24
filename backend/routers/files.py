@@ -1,25 +1,22 @@
 import os
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, Response
 
 router = APIRouter()
 
-FOLDERS = {
-    "images": "./data/images",
-    "user_images": "./data/user_images",
-    "set_logo": "./data/set_logo",
-    "set_symbol": "./data/set_symbol",
-}
+@router.get("/images/{filename}")
+@router.get("/user_images/{filename}")
+@router.get("/set_logo/{filename}")
+@router.get("/set_symbol/{filename}")
+def serve_file(filename: str, request: Request):
 
-@router.get("/{folder}/{filename}")
-def serve_file(folder: str, filename: str):
-    if folder not in FOLDERS:
-        return FileResponse(PLACEHOLDER)
-
-    directory = FOLDERS[folder]
-    path = os.path.join(directory, filename)
+    path = f'./data/{request.url.path}'
 
     if not os.path.exists(path):
-        return FileResponse(f'./data/placeholder.webp')
+        match request.url.path.split('/')[1]:
+            case 'images':
+                return FileResponse(f'./data/placeholder.webp')
+            case _:
+                return FileResponse(f'./data/placeholder_set.png')
 
     return FileResponse(path)

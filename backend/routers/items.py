@@ -115,17 +115,7 @@ def search(request: SearchRequest, token: Optional[str] = Depends(oauth2_scheme)
         viewer = jwt_decoded.get('sub')
 
     result, numOfCards = query_card(
-        name = request.name,
-        illustrator = request.illustrator,
-        rarity = request.rarity,
-        card_set = request.card_set,
-        card_set_id = request.card_set_id,
-        card_id = request.card_id,
-        release_date_from = request.release_date_from,
-        release_date_to = request.release_date_to,
-        limit = request.limit,
-        offset = request.offset,
-        viewer = viewer
-        )
+        request, viewer
+    )
 
     return {"data": result,  'numOfCards': numOfCards} 

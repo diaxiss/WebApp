@@ -87,14 +87,17 @@ def formatQueryResult(queryResult: list, keys: list) -> list:
     return result
 
 
-def parseConditions(params) -> tuple[list, list]:
+def parseConditions(request) -> tuple[list, list]:
 
     conditions = []
     values = []
 
-    for param in params:
+    request = dict(request)
 
-        value = params[param]
+    for param in request.keys():
+
+        value = request[param]
+
         if value == None:
             continue
 
@@ -127,27 +130,13 @@ def parseConditions(params) -> tuple[list, list]:
                 conditions.append(f"card_sets.release_date <= ?")
                 values.append(f'{value}')
 
-            case 'limit'| 'offset':
-                pass
-
     return conditions, values
 
 
 def query_card(
-    limit: int,
-    offset: int,
-    name: str = None, 
-    illustrator: str = None,
-    rarity: str = None,
-    card_set: str = None,
-    card_set_id: str = None,
-    card_id: str = None,
-    release_date_from: str = None,
-    release_date_to: str = None,
+    request: dict,
     viewer: str | None = None
     ) -> tuple[list, int]:
-
-    params = {k: v for k, v in locals().items() if v is not None}
 
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
@@ -182,13 +171,13 @@ def query_card(
     WHERE tcgpocket = 0
     '''
 
-    conditions, values = parseConditions(params)
+    conditions, values = parseConditions(request)
     if conditions:
         query += ' AND ' + ' AND '.join(conditions)
     query += ' ORDER BY card_sets.release_date DESC' 
     query += ' LIMIT ? OFFSET ?'
 
-    values.extend([limit, offset])
+    values.extend([request.limit, request.offset])
 
     result = cur.execute(query, [viewer, viewer, *values]).fetchall()
 

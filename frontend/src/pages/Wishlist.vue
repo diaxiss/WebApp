@@ -40,19 +40,19 @@ onMounted(async() => {
 
 <template>
     <PageHeader/>
-    <Loading v-if="loading"/>
 
-    <div v-else>
+    <div>
         <h1>Wishlist</h1>
         <LimitSelect @change="handleChange"/>
 
+
         <CardContainer
-            v-if="wishlist.length!==0"
             :cards="wishlist"
             :displayInfo="true"
             :extraOptions="user_id ? false : true"/>
 
-        <p v-else>{{ user_id ? 'There are' : 'You have'}} no items on your wishlist</p>
+        <p v-if="wishlist.length===0 && loading===false">
+            {{ user_id ? 'There are' : 'You have'}} no items on your wishlist</p>
 
         <PageIndicator
             @load-more="handleLoadMore"

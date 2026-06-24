@@ -29,7 +29,7 @@ def add_user_to_db(user: dict, con, cur):
     cur.execute(query, [user['sub'], user['email'], user['name'], user['picture']])
 
 
-def check_user_in_db(user: dict) -> None:
+def check_and_add_user_in_db(user: dict) -> None:
     con = sqlite3.connect('./data/cards.db')
     cur = con.cursor()
 
@@ -40,9 +40,11 @@ def check_user_in_db(user: dict) -> None:
     '''
 
     result = cur.execute(query, [user['sub']]).fetchall()
+
     if len(result) == 0:
         add_user_to_db(user, con, cur)
         con.commit()
+
     result = cur.execute(query, [user['sub']]).fetchall()
     return result[0][0]
 

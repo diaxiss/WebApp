@@ -12,7 +12,6 @@ import { loading } from '../utilities/constants';
 import { useRoute } from 'vue-router';
 import type { Card } from '../utilities/interfaces';
 import { usePayloadStore } from '../stores/payloadStore';
-import Loading from '../components/Loading.vue';
 
 const collection = ref<Card[]>([])
 const collectionLength = ref<number>(0)
@@ -47,21 +46,21 @@ onMounted(async() => {
 
     <PageHeader/>
 
-    <Loading v-if="loading"/>
 
-    <div v-else>
+    <div>
         <h1>Collection</h1>
         <LimitSelect
             @change="handleChangeLimit"
         />
+
         <CardContainer
-            v-if="collection.length!==0"
             :cards="collection"
             :display-info="false"
             :extra-options="user_id ? false : true"/>
-        <div v-else>
-            <p>{{ user_id ? 'This' : 'Your'}} collection is empty</p>
-        </div>
+
+        <p v-if="loading===false && collection.length===0">
+            {{ user_id ? 'This' : 'Your'}} collection is empty</p>
+        
         <PageIndicator
             @load-more="handlePageChange"
             :data="collection"

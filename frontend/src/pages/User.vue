@@ -1,12 +1,15 @@
 <script setup lang="tsx">
 
-import loading_gif from '../assets/loading.gif'
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+import type { User } from '../utilities/interfaces';
+
 import { API_URL, loading } from '../utilities/constants';
 import { fetchAllUsers } from '../utilities/aplFetch';
-import type { User } from '../utilities/interfaces';
 import PageHeader from '../components/PageHeader.vue';
-import { useRouter } from 'vue-router';
+import loading_gif from '../assets/loading.gif'
+import '../styles/User.css'
 
 const users = ref<User[]>([]);
 const router = useRouter()
@@ -27,7 +30,7 @@ onMounted(async() => {
         style="display: flex; gap: 10px;">
         <div v-for="user in users"
             @click="router.push(`/profile/${user.picture.split('.')[0]}`)">
-            <img :src="`${API_URL}/user_images/${user.picture}`"/>
+            <img class="user-image" :src="`${API_URL}/user_images/${user.picture}`"/>
             <p>{{ user.name }}</p>
         </div>
     </div>

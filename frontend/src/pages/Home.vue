@@ -14,7 +14,6 @@ import type { Card } from '../utilities/interfaces';
 import { usePayloadStore } from '../stores/payloadStore';
 
 const { fetchAll } = useCardSearch()
-
 const store = usePayloadStore()
 
 const cards = ref<Card[]>([]);
@@ -31,8 +30,10 @@ const handlePageChange = async(page: number) => {
 }
 
 const handleFetchAll = async() => {
+    loading.value = true;
     [cards.value, cardsLength.value] = await fetchAll()
     store.clearPayload()
+    loading.value = false
 }
 
 onMounted(async () => {
